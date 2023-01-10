@@ -16,7 +16,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 		</div>
 		<div class="bili-video-card__wrap __scale-wrap" data-v-dec592ec="">
 			<a
-				href="https://www.bilibili.com/video/BV${bvid}/" class="" target="_blank"
+				href="https://www.bilibili.com/video/${bvid}/" class="" target="_blank"
 				data-v-dec592ec="" data-mod="search-card" data-idx="all" data-ext="click">
 				<div class="bili-video-card__image __scale-player-wrap" data-v-dec592ec="">
 					<div class="bili-video-card__image--wrap" data-v-dec592ec="">
@@ -61,7 +61,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 			<div class="bili-video-card__info __scale-disable" data-v-dec592ec="">
 				<div class="bili-video-card__info--right" data-v-dec592ec="">
 					<a
-						href="https://www.bilibili.com/video/BV${bvid}/" target="_blank" data-v-dec592ec=""
+						href="https://www.bilibili.com/video/${bvid}/" target="_blank" data-v-dec592ec=""
 						data-mod="search-card" data-idx="all" data-ext="click">
 						<h3 class="bili-video-card__info--tit" title="${title}"
 							data-v-dec592ec="">${title}</h3>
