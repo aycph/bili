@@ -1,6 +1,6 @@
 /// <reference path="./type.ts"/>
 /// <reference path="./request.ts"/>
-/// <reference path="./feed-card.ts"/>
+/// <reference path="./make-card.ts"/>
 
 async function main() {
 
@@ -15,7 +15,7 @@ async function main() {
 	videos.sort((a, b) => b['created'] - a['created']);
 
 	const root = document.getElementById('CPH')!;
-	for (let video of videos.slice(0, 24)) {
+	for (let video of videos.slice(0, 30)) {
 		root.innerHTML += make_card(video);
 	}
 
