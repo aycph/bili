@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"lib": ["ES2019", "DOM"],
+		"outFile": "index.js"
+	},
+	"include": [
+		"index.ts"
+	]
+}

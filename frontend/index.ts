@@ -6,11 +6,9 @@ async function main() {
 
 	const ups: Up[] = await fetch('bili.json').then(res => res.json());
 
-	const videos: Param[] = [];
-	for (let up of ups) {
-		const vlist = await request(up.mid);
-		videos.push(...convert(vlist).slice(0,6));
-	}
+	const videos = (await Promise.all(
+		ups.map( up => request(up.mid).then(convert).then(vlist => vlist.slice(0, 15)) )
+		)).flat();
 
 	videos.sort((a, b) => b['created'] - a['created']);
 

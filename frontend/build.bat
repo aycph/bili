@@ -1,1 +1,0 @@
-@tsc index.ts --outfile index.js
