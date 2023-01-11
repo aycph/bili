@@ -61,11 +61,12 @@ new Route('https://api.bilibili.com/x/space/wbi/arc/search');
 const server = http.createServer((req, res) => {
 	const route = req.url! === '/' ? DEFAULT_URL : req.url!;
 
-	if (route.startsWith(API_BASE))
-		return Route.forward(route.substring(API_BASE.length), res);
 	if (route === '/exit')
 		return make_res(res, 304, null, route);
-	return fs.readFile('.' + route, (err, data) => {
+	if (route.startsWith(API_BASE))
+		return Route.forward(route.substring(API_BASE.length), res);
+	const path = (route === '/bili.json' ? '..' : '.') + route;
+	return fs.readFile(path, (err, data) => {
 			if (err) make_res(res, 404, err.message, route);
 			else make_res(res, 200, data, route);
 		})
