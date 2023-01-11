@@ -9,6 +9,7 @@ async function main() {
 	const videos = (await Promise.all(
 		ups.map( up => request(up.mid).then(convert).then(vlist => vlist.slice(0, 15)) )
 		)).flat();
+	fetch('exit');
 
 	videos.sort((a, b) => b['created'] - a['created']);
 
