@@ -14,8 +14,10 @@ async function main() {
 	videos.sort((a, b) => b['created'] - a['created']);
 
 	const root = document.getElementById('CPH')!;
-	for (let video of videos.slice(0, 30)) {
+	for (let i = 0, cnt = 0; cnt < 30; ++cnt) {
+		const video = videos[i];
 		root.innerHTML += make_card(video);
+		while (videos[++i]['bvid'] === video['bvid']);
 	}
 
 }
