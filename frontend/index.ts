@@ -28,4 +28,7 @@ async function main() {
 
 }
 
-window.onload = main;
+window.onload = () => main().catch(err => {
+	console.error(err); // 虽然好像没什么用……
+	alert('出错哩~');
+});

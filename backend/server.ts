@@ -11,7 +11,9 @@ const HEADER = {
 	'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54'
 }
 
-function make_res(res: http.ServerResponse, statusCode: number, data: any, route: string, headers?: http.OutgoingHttpHeaders | http.OutgoingHttpHeader[]): void {
+type Chunk = string | Buffer | Uint8Array | null;
+
+function make_res(res: http.ServerResponse, statusCode: number, data: Chunk, route: string, headers?: http.OutgoingHttpHeaders | http.OutgoingHttpHeader[]): void {
 	res.writeHead(statusCode, headers);
 	console.log(statusCode, route);
 	res.end(data);
@@ -33,7 +35,10 @@ class Route {
 					fres.on('data', data => buffer += data);
 					fres.on('end', () => make_res(res, fres.statusCode!, buffer, API_BASE + route, fres.headers))
 				}
-			)
+			).on('error', err => {
+				console.error(err);
+				make_res(res, 503, err.message, API_BASE + route);
+			})
 			return;
 		}
 		make_res(res, 404, 'CPH: No such route', API_BASE + route);
