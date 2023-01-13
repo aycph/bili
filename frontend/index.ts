@@ -13,10 +13,16 @@ async function main() {
 
 	videos.sort((a, b) => b['created'] - a['created']);
 
+	const alert_set = new Set<Up>();
 	const root = document.getElementById('CPH')!;
 	for (let i = 0, cnt = 0; cnt < 30; ++cnt) {
 		const video = videos[i];
 		root.innerHTML += make_card(video);
+		const up = ups.find(value => value['mid'] === video['mid']);
+		if (up && !alert_set.has(up) && up['name'] !== video['author']) {
+			alert_set.add(up);
+			alert(`“${up['name']}” 已经被更名为 “${video['author']}”`);
+		}
 		while (videos[++i]['bvid'] === video['bvid']);
 	}
 
