@@ -76,7 +76,7 @@ type Param = {
 function play2views(play: number): string {
 	if (play < 10000) return play.toString();
 	if ((play /= 10000) < 10000) return play.toFixed(1) + '万';
-	return (play /= 10000).toFixed(1) + '亿'
+	return (play /= 10000).toFixed(1) + '亿';
 }
 
 function created2posttime(created: number): string {
@@ -84,10 +84,11 @@ function created2posttime(created: number): string {
 	const time = created * 1000;
 	const now = Date.now();
 	const dtime = new Date(time);
-	const dnow = new Date(now); //
-	const delta = now - time
-	if (delta < 3600_000) return (delta / 60_000).toFixed(0) + '分钟前';
-	if (delta < 24 * 3600_000) return (delta / 3600_000).toFixed(0) + '小时前';
+	const dnow = new Date(now);
+	const delta = now - time;
+	if (delta < 60_000) return '刚刚';
+	if (delta < 3600_000) return Math.floor(delta / 60_000) + '分钟前';
+	if (delta < 24 * 3600_000) return Math.floor(delta / 3600_000) + '小时前';
 	if (dnow.setHours(0,0,0,0) - time < 24 * 3600_000) return '昨天';
 	const month = dtime.getMonth() + 1;
 	const date = dtime.getDate();
@@ -106,8 +107,8 @@ function _convert_item({ bvid, pic, play, video_review, length, title, mid, auth
 		mid,
 		author,
 		posttime: created2posttime(created),
-		created
-	}
+		created,
+	};
 }
 
 function convert({ data }: Search): Param[] {
