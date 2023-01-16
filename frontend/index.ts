@@ -18,7 +18,7 @@ async function main() {
 	for (let i = 0, cnt = 0; cnt < 30; ++cnt) {
 		const video = videos[i];
 		root.innerHTML += make_card(video);
-		const up = ups.find(value => value['mid'] === video['mid']);
+		const up = ups.find(value => value['mid'] == video['mid']); // 使用“==”，没准类型不匹配但值相等呢……
 		if (up && !alert_set.has(up) && up['name'] !== video['author']) {
 			alert_set.add(up);
 			alert(`“${up['name']}” 已经被更名为 “${video['author']}”`);
