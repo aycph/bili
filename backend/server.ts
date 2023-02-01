@@ -36,8 +36,8 @@ class Route {
 					fres.on('end', () => make_res(res, fres.statusCode!, buffer, API_BASE + route, fres.headers))
 				}
 			).on('error', err => {
-				console.error(err);
 				make_res(res, 503, err.message, API_BASE + route);
+				console.error(err);
 			})
 			return;
 		}
