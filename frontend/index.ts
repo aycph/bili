@@ -2,10 +2,7 @@
 /// <reference path="./request.ts"/>
 /// <reference path="./make-card.ts"/>
 
-async function main() {
-
-	const ups: Up[] = await fetch('bili.json').then(res => res.json());
-
+async function part1(ups: Up[]) {
 	const videos = (await Promise.all(
 		ups.map( up => request(up.mid).then(convert).then(vlist => vlist.slice(0, 15)) )
 		)).flat();
@@ -25,6 +22,25 @@ async function main() {
 		}
 		while (videos[++i]['bvid'] === video['bvid']);
 	}
+}
+
+async function part2(ups: Up[]) {
+	const live_rooms_with_null = (await Promise.all(
+		ups.map( up => get_info(up.mid).then(convert2_live_param) )
+	))
+	const live_rooms: LiveParam[] = live_rooms_with_null.filter(param => param !== null) as LiveParam[];
+	const root = document.getElementById('cphcph')!;
+	root.innerHTML = live_rooms.map(make_live).join();
+}
+
+async function main() {
+
+	const ups: Up[] = await fetch('bili.json').then(res => res.json());
+
+	await Promise.all([
+		part1(ups),
+		part2(ups)
+	])
 
 }
 

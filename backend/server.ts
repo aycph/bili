@@ -62,6 +62,7 @@ class Route {
 }
 
 new Route('https://api.bilibili.com/x/space/wbi/arc/search');
+new Route('https://api.bilibili.com/x/space/wbi/acc/info')
 
 const server = http.createServer((req, res) => {
 	const route = req.url! === '/' ? DEFAULT_URL : req.url!;

@@ -114,3 +114,43 @@ function _convert_item({ bvid, pic, play, video_review, length, title, mid, auth
 function convert({ data }: Search): Param[] {
 	return data['list']['vlist'].map(_convert_item);
 }
+
+type Info = {
+	code: number,
+	data: {
+		mid: number,
+		name: string,
+		face: string,
+		live_room: null | {
+			cover: string, // url
+			liveStatus: number,
+			// roomStatus: number,
+			roomid: number,
+			title: string,
+			url: string, // url
+			watched_show: {
+				// ...
+			}
+		}
+	}
+}
+
+type LiveParam = {
+	mid: number,
+	name: string,
+	face: string,
+	roomid: number,
+	title: string
+}
+
+function convert2_live_param({ data }: Info): LiveParam | null {
+	const live_room = data['live_room'];
+	if (live_room === null || !live_room['liveStatus']) return null;
+	return {
+		mid: data['mid'],
+		name: data['name'],
+		face: data['face'],
+		roomid: live_room['roomid'],
+		title: live_room['title']
+	}
+}
