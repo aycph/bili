@@ -121,6 +121,9 @@ type Info = {
 		mid: number,
 		name: string,
 		face: string,
+		official: {
+			title: string
+		}
 		live_room: null | {
 			cover: string, // url
 			liveStatus: number,
@@ -139,6 +142,7 @@ type LiveParam = {
 	mid: number,
 	name: string,
 	face: string,
+	sign: string,
 	roomid: number,
 	title: string
 }
@@ -150,6 +154,7 @@ function convert2_live_param({ data }: Info): LiveParam | null {
 		mid: data['mid'],
 		name: data['name'],
 		face: data['face'],
+		sign: data['official']['title'],
 		roomid: live_room['roomid'],
 		title: live_room['title']
 	}

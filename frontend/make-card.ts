@@ -87,7 +87,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 `
 }
 
-function make_live({ mid, name, roomid, face, title }: LiveParam) {
+function make_live({ mid, name, roomid, face, sign, title }: LiveParam) {
 	return `
 <div class="b-user-video-card p_relative not_100" data-v-6182da82="" data-v-657aea76="" data-report="search-card.all"><!---->
 	<div class="video-card-content i_wrapper" data-v-6182da82="">
@@ -129,7 +129,8 @@ function make_live({ mid, name, roomid, face, title }: LiveParam) {
 					</h2>
 					<p class="b_text text2 text_ellipsis mt_sm" data-v-6182da82="">
 						<!--粉丝：20.0万 · 视频：1341-->
-						<span class="text3 ml_md" data-v-6182da82="">${title}</span>
+						${title}
+						<span class="text3 ml_md" data-v-6182da82="">${sign}</span>
 					</p>
 				</div>
 			</div>
