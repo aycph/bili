@@ -2,20 +2,22 @@
 /// <reference path="./request.ts"/>
 /// <reference path="./make-card.ts"/>
 
-async function part1(ups: Up[]) {
-	const videos = (await Promise.all(
-		ups.map( up => request(up.mid).then(convert).then(vlist => vlist.slice(0, 15)) )
+const MAX_NUM_PER_PAGE = 30;
+
+async function part1(ups: Up[]): Promise<Param[]> {
+	let videos = (await Promise.all(
+		ups.map( up => request(up.mid).then(convert) )
 		)).flat();
 
 	videos.sort((a, b) => b['created'] - a['created']);
 
-	const alert_set = new Set<Up>();
+	let tmp_bvid: Param['bvid'];
+	videos = videos.filter( video => video['bvid'] !== tmp_bvid && (tmp_bvid = video['bvid']) );
+
 	const root = document.getElementById('CPH')!;
-	for (let i = 0, cnt = 0; cnt < 30; ++cnt) {
-		const video = videos[i];
-		root.innerHTML += make_card(video);
-		while (videos[++i]['bvid'] === video['bvid']);
-	}
+	root.innerHTML = videos.slice(0, MAX_NUM_PER_PAGE).map(make_card).join('')
+
+	return videos;
 }
 
 async function part2(ups: Up[]): Promise<{ old: string, now: string }[]> {
@@ -31,7 +33,7 @@ async function part2(ups: Up[]): Promise<{ old: string, now: string }[]> {
 
 	const live_rooms: LiveParam[] = infos.map(convert2_live_param).filter(param => param !== null) as LiveParam[];
 	const root = document.getElementById('cphcph')!;
-	root.innerHTML = live_rooms.map(make_live).join();
+	root.innerHTML = live_rooms.map(make_live).join('');
 
 	return alert_list;
 }
@@ -41,7 +43,7 @@ async function main() {
 	const bili: [Up[], Up[]] = await fetch('bili.json').then(res => res.json());
 	const ups = bili.flat();
 
-	const [ , alert_list] = await Promise.all([
+	const [videos, alert_list] = await Promise.all([
 		part1(ups),
 		part2(ups),
 	])
