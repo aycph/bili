@@ -139,3 +139,69 @@ function make_live({ mid, name, roomid, face, sign, title }: LiveParam) {
 </div>
 `
 }
+
+function make_btn(i: number, page: number, render: (page: number) => void) {
+	const btn = document.createElement('button');
+	btn.className = `vui_button vui_button--no-transition vui_pagenation--btn vui_pagenation--btn-num ${i === page ?'vui_button--active vui_button--active-blue' : ''}`;
+	btn.innerText = i.toString();
+	btn.onclick = () => render(i); // 也无需判断 page !== i
+	return btn;
+}
+
+function make_side_btns(page: number, pages: number, text: '上一页' | '下一页', render: (page: number) => void): HTMLButtonElement {
+	const btn = document.createElement('button');
+	btn.className = 'vui_button vui_button--disabled vui_pagenation--btn vui_pagenation--btn-side';
+	btn.disabled = text === '上一页' ? page === 1 : page === pages;
+	btn.innerText = text;
+	btn.onclick = () => render(text === '上一页' ? page - 1 : page + 1);
+	return btn;
+}
+
+function make_ellipsis() {
+	const e = document.createElement('span');
+	e.className = 'vui_pagenation--extend';
+	e.innerText = '...';
+	return e;
+}
+
+function make_paginations(videos: Param[], num_per_page: number, page: number, render: (page: number) => void): HTMLElement[] {
+	const pages = Math.ceil(videos.length / num_per_page);
+	if (pages < 10) {
+		return [
+			make_side_btns(page, pages, '上一页', render),
+			...Array(pages).map((_, i) => make_btn(i+1, page, render)),
+			make_side_btns(page, pages, '下一页', render),
+		]
+	} else {
+		if (page < 6) {
+			// 1 - 7 … pages
+			return [
+				make_side_btns(page, pages, '上一页', render),
+				...[1,2,3,4,5,6,7].map(i => make_btn(i, page, render)),
+				make_ellipsis(),
+				make_btn(pages, page, render),
+				make_side_btns(page, pages, '下一页', render),
+			]
+		} else if (page > pages - 5) {
+			// 1 … pages-6 - pages
+			return [
+				make_side_btns(page, pages, '上一页', render),
+				make_btn(1, page, render),
+				make_ellipsis(),
+				...[6,5,4,3,2,1,0].map(i => make_btn(pages-i, page, render)),
+				make_side_btns(page, pages, '下一页', render),
+			]
+		} else {
+			// 显示 1 … idx-2 idx-1 idx idx+1 idx+2 … pages
+			return [
+				make_side_btns(page, pages, '上一页', render),
+				make_btn(1, page, render),
+				make_ellipsis(),
+				...[-2,-1,0,1,2].map(i => make_btn(page+i, page, render)),
+				make_ellipsis(),
+				make_btn(pages, page, render),
+				make_side_btns(page, pages, '下一页', render),
+			]
+		}
+	}
+}

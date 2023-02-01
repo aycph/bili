@@ -5,19 +5,14 @@
 const MAX_NUM_PER_PAGE = 30;
 
 async function part1(ups: Up[]): Promise<Param[]> {
-	let videos = (await Promise.all(
+	const videos = (await Promise.all(
 		ups.map( up => request(up.mid).then(convert) )
 		)).flat();
 
 	videos.sort((a, b) => b['created'] - a['created']);
 
 	let tmp_bvid: Param['bvid'];
-	videos = videos.filter( video => video['bvid'] !== tmp_bvid && (tmp_bvid = video['bvid']) );
-
-	const root = document.getElementById('CPH')!;
-	root.innerHTML = videos.slice(0, MAX_NUM_PER_PAGE).map(make_card).join('')
-
-	return videos;
+	return videos.filter( video => video['bvid'] !== tmp_bvid && (tmp_bvid = video['bvid']) );
 }
 
 async function part2(ups: Up[]): Promise<{ old: string, now: string }[]> {
@@ -33,12 +28,23 @@ async function part2(ups: Up[]): Promise<{ old: string, now: string }[]> {
 
 	const live_rooms: LiveParam[] = infos.map(convert2_live_param).filter(param => param !== null) as LiveParam[];
 	const root = document.getElementById('cphcph')!;
-	root.innerHTML = live_rooms.map(make_live).join('');
+	root.innerHTML = live_rooms.map(make_live).join('\n');
 
 	return alert_list;
 }
 
-async function main() {
+function render_page(videos: Param[], page: number) {
+	document.getElementById('CPH')!.innerHTML = 
+		videos.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE).map(make_card).join('\n');
+
+	const paginations = document.getElementById('ccpphh')!;
+	paginations.innerHTML = '';
+	paginations.append(
+		...make_paginations(videos, MAX_NUM_PER_PAGE, page, page => render_page(videos, page))
+		);
+}
+
+async function main(page: number) {
 
 	const bili: [Up[], Up[]] = await fetch('bili.json').then(res => res.json());
 	const ups = bili.flat();
@@ -48,12 +54,14 @@ async function main() {
 		part2(ups),
 	])
 
+	render_page(videos, 1);
+
 	for (let { old, now } of alert_list) {
 		alert(`“${old}” 已经更名为 “${now}”`);
 	}
 }
 
-window.onload = () => main().then(() => fetch('exit')).catch(err => {
+window.onload = () => main(1).then(() => fetch('exit')).catch(err => {
 	console.error(err); // 虽然好像没什么用……
 	alert('出错哩~');
 });
