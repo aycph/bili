@@ -15,33 +15,41 @@ async function part1(ups: Up[]) {
 	for (let i = 0, cnt = 0; cnt < 30; ++cnt) {
 		const video = videos[i];
 		root.innerHTML += make_card(video);
-		const up = ups.find(value => value['mid'] == video['mid']); // 使用“==”，没准类型不匹配但值相等呢……
-		if (up && !alert_set.has(up) && up['name'] !== video['author']) {
-			alert_set.add(up);
-			alert(`“${up['name']}” 已经被更名为 “${video['author']}”`);
-		}
 		while (videos[++i]['bvid'] === video['bvid']);
 	}
 }
 
-async function part2(ups: Up[]) {
-	const live_rooms_with_null = (await Promise.all(
-		ups.map( up => get_info(up.mid).then(convert2_live_param) )
-	))
-	const live_rooms: LiveParam[] = live_rooms_with_null.filter(param => param !== null) as LiveParam[];
+async function part2(ups: Up[]): Promise<{ old: string, now: string }[]> {
+
+	const alert_list: { old: string, now: string }[] = []
+
+	const infos = await Promise.all( ups.map( async up => {
+		const info = await get_info(up.mid);
+		const now = info['data']['name'], old = up.name;
+		if (now !== old) alert_list.push({ old, now })
+		return info;
+	}) )
+
+	const live_rooms: LiveParam[] = infos.map(convert2_live_param).filter(param => param !== null) as LiveParam[];
 	const root = document.getElementById('cphcph')!;
 	root.innerHTML = live_rooms.map(make_live).join();
+
+	return alert_list;
 }
 
 async function main() {
 
-	const ups: Up[] = await fetch('bili.json').then(res => res.json());
+	const bili: [Up[], Up[]] = await fetch('bili.json').then(res => res.json());
+	const ups = bili.flat();
 
-	await Promise.all([
+	const [ , alert_list] = await Promise.all([
 		part1(ups),
-		part2(ups)
+		part2(ups),
 	])
 
+	for (let { old, now } of alert_list) {
+		alert(`“${old}” 已经更名为 “${now}”`);
+	}
 }
 
 window.onload = () => main().catch(err => {
