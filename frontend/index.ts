@@ -6,7 +6,6 @@ async function part1(ups: Up[]) {
 	const videos = (await Promise.all(
 		ups.map( up => request(up.mid).then(convert).then(vlist => vlist.slice(0, 15)) )
 		)).flat();
-	fetch('exit');
 
 	videos.sort((a, b) => b['created'] - a['created']);
 
@@ -52,7 +51,7 @@ async function main() {
 	}
 }
 
-window.onload = () => main().catch(err => {
+window.onload = () => main().then(() => fetch('exit')).catch(err => {
 	console.error(err); // 虽然好像没什么用……
 	alert('出错哩~');
 });
