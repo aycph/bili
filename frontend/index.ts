@@ -44,7 +44,7 @@ function render_page(videos: Param[], page: number) {
 		);
 }
 
-async function main(page: number) {
+async function main() {
 
 	const bili: [Up[], Up[]] = await fetch('bili.json').then(res => res.json());
 	const ups = bili.flat();
@@ -59,7 +59,7 @@ async function main(page: number) {
 	alert(alert_list.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'))
 }
 
-window.onload = () => main(1).then(() => fetch('exit')).catch(err => {
+window.onload = () => main().then(() => fetch('exit')).catch(err => {
 	console.error(err); // 虽然好像没什么用……
 	alert('出错哩~');
 });
