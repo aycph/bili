@@ -56,7 +56,8 @@ async function main() {
 
 	render_page(videos, 1);
 
-	alert(alert_list.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'))
+	if (alert_list.length)
+		alert(alert_list.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'))
 }
 
 window.onload = () => main().then(() => fetch('exit')).catch(err => {
