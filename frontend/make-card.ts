@@ -87,7 +87,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 `
 }
 
-function make_live({ mid, name, roomid, face, sign, title }: LiveParam) {
+function make_live({ mid, name, level, roomid, face, sign, title }: LiveParam) {
 	return `
 <div class="b-user-video-card p_relative not_100" data-v-6182da82="" data-v-657aea76="" data-report="search-card.all"><!---->
 	<div class="video-card-content i_wrapper" data-v-6182da82="">
@@ -120,7 +120,7 @@ function make_live({ mid, name, roomid, face, sign, title }: LiveParam) {
 							href="//space.bilibili.com/${mid}" target="_blank" data-v-6182da82="">
 							${name}
 							<svg class="level-icon ml_sm" data-v-fec65f0c="" data-v-6182da82="">
-								<use xlink:href="#lv_6"></use>
+								<use xlink:href="#lv_${level}"></use>
 							</svg>
 						</a>
 						<div class="user-actions d_inline_block ml_md" data-v-6182da82="">
