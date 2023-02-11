@@ -27,13 +27,14 @@ class Route {
 			let url = routeEntry.route;
 			const split = route.lastIndexOf('?');
 			if (split !== -1) url += route.substring(split);
-			let buffer = '';
 			https.get(
 				url,
 				{ headers: HEADER },
-				fres => {
-					fres.on('data', data => buffer += data);
-					fres.on('end', () => make_res(res, fres.statusCode!, buffer, API_BASE + route, fres.headers))
+				i_res => {
+					res.writeHead(i_res.statusCode!, i_res.headers);
+					console.log(i_res.statusCode, API_BASE + route);
+					i_res.on('data', data => res.write(data));
+					i_res.on('end', () => res.end(null));
 				}
 			).on('error', err => {
 				make_res(res, 503, err.message, API_BASE + route);
