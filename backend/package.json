@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "@types/node": "^18.11.18"
+  },
+  "scripts": {
+    "build": "tsc server.ts"
   }
 }

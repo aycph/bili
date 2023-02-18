@@ -1,6 +1,6 @@
-import http from 'http';
-import https from 'https';
-import fs from 'fs'
+import * as http from 'http';
+import * as https from 'https';
+import * as fs from 'fs'
 
 const DEFAULT_URL = '/index.html'
 const API_BASE = '/api';
