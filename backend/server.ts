@@ -20,8 +20,25 @@ function make_res(res: http.ServerResponse, statusCode: number, data: Chunk, rou
 }
 
 class Route {
-	static routingTable: Route[] = [];
-	static forward(route: string, res: http.ServerResponse): void {
+	protected static routingTable: Route[] = [];
+	protected readonly route: string;
+	protected readonly test: (url: string) => boolean;
+
+	public constructor(route: string, test?: (url: string) => boolean) {
+		this.route = route;
+		if (test !== undefined) {
+			this.test = test;
+		} else {
+			const pattern = route.substring(route.lastIndexOf('/'))
+			this.test = url => {
+				const split = url.lastIndexOf('?');
+				return ( split === -1 ? url : url.substring(0, split) ) === pattern
+			}
+		}
+		Route.routingTable.push(this);
+	}
+
+	public static forward(route: string, res: http.ServerResponse): void {
 		for (let routeEntry of Route.routingTable) {
 			if (!routeEntry.test(route)) continue;
 			let url = routeEntry.route;
@@ -44,26 +61,10 @@ class Route {
 		}
 		make_res(res, 404, 'CPH: No such route', API_BASE + route);
 	}
-	public readonly route: string;
-	public readonly test: (url: string) => boolean;
-	constructor(route: string, test?: (url: string) => boolean
-	) {
-		this.route = route;
-		if (test !== undefined) {
-			this.test = test;
-		} else {
-			const pattern = route.substring(route.lastIndexOf('/'))
-			this.test = url => {
-				const split = url.lastIndexOf('?');
-				return ( split === -1 ? url : url.substring(0, split) ) === pattern
-			}
-		}
-		Route.routingTable.push(this);
-	}
 }
 
 new Route('https://api.bilibili.com/x/space/wbi/arc/search');
-new Route('https://api.bilibili.com/x/space/wbi/acc/info')
+new Route('https://api.bilibili.com/x/space/wbi/acc/info');
 
 const server = http.createServer((req, res) => {
 	const route = req.url! === '/' ? DEFAULT_URL : req.url!;
