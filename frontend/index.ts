@@ -4,18 +4,36 @@
 
 const MAX_NUM_PER_PAGE = 30;
 
-async function part1(ups: Up[]): Promise<Param[]> {
-	const videos = (await Promise.all(
+async function part1(ups: Up[]) {
+	let videos = (await Promise.all(
 		ups.map( up => request(up.mid).then(convert) )
 		)).flat();
 
 	videos.sort((a, b) => b['created'] - a['created']);
 
-	let tmp_bvid: Param['bvid'];
-	return videos.filter( video => video['bvid'] !== tmp_bvid && (tmp_bvid = video['bvid']) );
+	videos = videos.filter(
+		function() {
+			let tmp_bvid: Param['bvid'];
+			return video => video['bvid'] !== tmp_bvid && (tmp_bvid = video['bvid'])
+		} ()
+	);
+
+	function render_page(videos: Param[], page: number) {
+		document.getElementById('CPH')!.innerHTML = 
+			videos.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE).map(make_card).join('\n');
+	
+		const paginations = document.getElementById('ccpphh')!;
+		paginations.innerHTML = '';
+		paginations.append(
+			...make_paginations(videos, MAX_NUM_PER_PAGE, page, page => render_page(videos, page))
+			);
+	};
+	render_page(videos, 1);
+
+	return videos;
 }
 
-async function part2(ups: Up[]): Promise<{ old: string, now: string }[]> {
+async function part2(ups: Up[]) {
 
 	const alert_list: { old: string, now: string }[] = []
 
@@ -29,19 +47,8 @@ async function part2(ups: Up[]): Promise<{ old: string, now: string }[]> {
 	const live_rooms: LiveParam[] = infos.map(convert2_live_param).filter(param => param !== null) as LiveParam[];
 	const root = document.getElementById('cphcph')!;
 	root.innerHTML = live_rooms.map(make_live).join('\n');
-
-	return alert_list;
-}
-
-function render_page(videos: Param[], page: number) {
-	document.getElementById('CPH')!.innerHTML = 
-		videos.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE).map(make_card).join('\n');
-
-	const paginations = document.getElementById('ccpphh')!;
-	paginations.innerHTML = '';
-	paginations.append(
-		...make_paginations(videos, MAX_NUM_PER_PAGE, page, page => render_page(videos, page))
-		);
+	
+	return { infos, alert_list };
 }
 
 async function main() {
@@ -49,18 +56,18 @@ async function main() {
 	const bili: [Up[], Up[]] = await fetch('bili.json').then(res => res.json());
 	const ups = bili.flat();
 
-	const [videos, alert_list] = await Promise.all([
-		part1(ups),
+	const [{ infos, alert_list }, videos] = await Promise.all([
 		part2(ups),
+		part1(ups),
 	])
 
-	render_page(videos, 1);
-
 	if (alert_list.length)
-		alert(alert_list.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'))
+		alert(alert_list.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'));
+	
+	return { infos, videos };
 }
 
-window.onload = () => main().then(() => fetch('exit')).catch(err => {
+window.onload = () => main().then(console.log).then(() => fetch('exit')).catch(err => {
 	console.error(err); // 虽然好像没什么用……
 	alert('出错哩~');
 });
