@@ -66,11 +66,16 @@ class Route {
 new Route('https://api.bilibili.com/x/space/wbi/arc/search');
 new Route('https://api.bilibili.com/x/space/wbi/acc/info');
 
-const server = http.createServer((req, res) => {
+const server = http.createServer();
+
+server.addListener('request', (req, res) => {
 	const route = req.url! === '/' ? DEFAULT_URL : req.url!;
 
-	if (route === '/exit')
-		return make_res(res, 304, null, route);
+	if (route === '/exit') {
+		make_res(res, 304, null, route);
+		server.close();
+		return;
+	}
 	if (route.startsWith(API_BASE))
 		return Route.forward(route.substring(API_BASE.length), res);
 	const path = (route === '/bili.json' ? '..' : '.') + route;
@@ -79,9 +84,5 @@ const server = http.createServer((req, res) => {
 			else make_res(res, 200, data, route);
 		})
 });
-
-server.addListener('request', (req, res) => {
-	if (req.url === '/exit') server.close();
-})
 
 server.listen(PORT, () => console.log('Server listening on port', PORT))
