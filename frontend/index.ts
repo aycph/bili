@@ -4,9 +4,19 @@
 
 const MAX_NUM_PER_PAGE = 30;
 
+var errno = false; // 全局变量，标记错误
+
+function make_error<T>(ret: T) {
+	return (err: any) => {
+		errno = true;
+		console.error(err);
+		return ret;
+	}
+}
+
 async function part1(ups: Up[]) {
 	let videos = (await Promise.all(
-		ups.map( up => request(up.mid).then(convert) )
+		ups.map( up => request(up.mid).then(convert).catch(make_error([])) )
 		)).flat();
 
 	videos.sort((a, b) => b['created'] - a['created']);
@@ -19,8 +29,9 @@ async function part1(ups: Up[]) {
 	);
 
 	function render_page(videos: Param[], page: number) {
-		document.getElementById('CPH')!.innerHTML = 
-			videos.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE).map(make_card).join('\n');
+		document.getElementById('CPH')!.innerHTML = videos
+			.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE)
+			.map(make_card).join('\n');
 	
 		const paginations = document.getElementById('ccpphh')!;
 		paginations.innerHTML = '';
@@ -38,13 +49,19 @@ async function part2(ups: Up[]) {
 	const alert_list: { old: string, now: string }[] = []
 
 	const infos = await Promise.all( ups.map( async up => {
-		const info = await get_info(up.mid);
-		const now = info['data']['name'], old = up.name;
-		if (now !== old) alert_list.push({ old, now })
-		return info;
+		try {
+			const info = await get_info(up.mid);
+			const now = info['data']['name'], old = up.name;
+			if (now !== old) alert_list.push({ old, now })
+			return info;
+		} catch (err) {
+			return make_error(null)(err);
+		}
 	}) )
 
-	const live_rooms: LiveParam[] = infos.map(convert2_live_param).filter(param => param !== null) as LiveParam[];
+	const live_rooms: LiveParam[] = infos
+		.map(info => info !== null ? convert2_live_param(info) : null)
+		.filter(param => param !== null) as LiveParam[];
 	const root = document.getElementById('cphcph')!;
 	root.innerHTML = live_rooms.map(make_live).join('\n');
 	
@@ -67,7 +84,12 @@ async function main() {
 	return { infos, videos };
 }
 
-window.onload = () => main().then(console.log).then(() => fetch('exit')).catch(err => {
-	console.error(err); // 虽然好像没什么用……
-	alert('出错哩~');
-});
+window.onload = () => main().then(console.log)
+	.then(() => {
+		if (errno) alert('出现了已处理的错误，请在控制台查收~');
+		else fetch('exit');
+	})
+	.catch(err => {
+		console.error(err);
+		alert('出错哩~');
+	});
