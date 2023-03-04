@@ -5,10 +5,14 @@ const API_URL = 'http://localhost:8000/api/'
 const SEARCH_URL = API_URL + 'search';
 const INFO_URL = API_URL + 'info';
 
-async function request(mid: Up['mid']): Promise<Search> {
-	return await fetch(`${SEARCH_URL}?mid=${mid}`).then(res => res.json())
+function make_request<O extends { code: number }, Args extends unknown[]>(args2url: (...args: Args) => string) {
+	return async (...args: Args) => {
+		const url = args2url(...args);
+		const res = await fetch(url).then(res => res.json()) as O;
+		if (res.code !== 0) throw { url, res };
+		return res;
+	}
 }
 
-async function get_info(mid: Up['mid']): Promise<Info> {
-	return await fetch(`${INFO_URL}?mid=${mid}`).then(res => res.json())
-}
+const request = make_request<Search, [Up['mid']]>(mid => `${SEARCH_URL}?mid=${mid}`);
+const get_info = make_request<Info, [Up['mid']]>(mid => `${INFO_URL}?mid=${mid}`);
