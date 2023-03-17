@@ -5,13 +5,14 @@
 const MAX_NUM_PER_PAGE = 30;
 
 var errno = false; // 全局变量，标记错误
+var mid2name: { [mid: Up['mid']]: string } = {}; // 全局变量，提供 mid 与昵称映射
 
 function make_error<T>(ret: T) {
 	return (err: any) => {
 		errno = true;
 		console.error(err);
 		return ret;
-	}
+	};
 }
 
 async function part1(ups: Up[]) {
@@ -24,7 +25,7 @@ async function part1(ups: Up[]) {
 	videos = videos.filter(
 		function() {
 			let tmp_bvid: Param['bvid'];
-			return video => video['bvid'] !== tmp_bvid && (tmp_bvid = video['bvid'])
+			return video => video['bvid'] !== tmp_bvid && (tmp_bvid = video['bvid']);
 		} ()
 	);
 
@@ -72,6 +73,7 @@ async function main() {
 
 	const bili: [Up[], Up[]] = await fetch('bili.json').then(res => res.json());
 	const ups = bili.flat();
+	ups.forEach(up => mid2name[up['mid']] = up['name']);
 
 	const [{ infos, alert_list }, videos] = await Promise.all([
 		part2(ups),
