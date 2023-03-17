@@ -6,6 +6,7 @@ const MAX_NUM_PER_PAGE = 30;
 
 var errno = false; // 全局变量，标记错误
 var mid2name: { [mid: Up['mid']]: string } = {}; // 全局变量，提供 mid 与昵称映射
+var logs: any; // 全局变量，用于保存输出信息方便调试
 
 function make_error<T>(ret: T) {
 	return (err: any) => {
@@ -86,7 +87,7 @@ async function main() {
 	return { infos, videos };
 }
 
-window.onload = () => main().then(console.log)
+window.onload = () => main().then(ret => { console.log(ret); logs = ret; })
 	.then(() => {
 		if (errno) alert('出现了已处理的错误，请在控制台查收~');
 		else fetch('exit');
