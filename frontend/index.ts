@@ -89,8 +89,8 @@ async function main() {
 
 window.onload = () => main().then(ret => { console.log(ret); logs = ret; })
 	.then(() => {
-		if (errno) alert('出现了已处理的错误，请在控制台查收~');
-		else fetch('exit');
+		if (!errno || window.confirm('出现了已处理的错误，请在控制台查收~\n是否关闭后端'))
+			fetch('exit');
 	})
 	.catch(err => {
 		console.error(err);
