@@ -2,7 +2,8 @@
 	"compilerOptions": {
 		"lib": ["ES2019", "DOM"],
 		"outFile": "index.js",
-		"strict": true
+		"strict": true,
+		"allowJs": true
 	},
 	"include": [
 		"index.ts"

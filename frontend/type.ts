@@ -42,7 +42,7 @@ type Item = {
 }
 
 type Search = {
-	code: number,
+	code: 0,
 	message: string,
 	data: {
 		list: {
@@ -116,7 +116,7 @@ function convert({ data }: Search): Param[] {
 }
 
 type Info = {
-	code: number,
+	code: 0,
 	data: {
 		mid: number,
 		name: string,
@@ -161,4 +161,17 @@ function convert2_live_param({ data }: Info): LiveParam | null {
 		roomid: live_room['roomid'],
 		title: live_room['title']
 	}
+}
+
+type BaseError = {
+	code: number,
+	message: string
+}
+
+type PossibleErrors = {
+	code: -401,
+	message: '非法访问'
+} | {
+	code: -403,
+	message: '访问权限不足'
 }

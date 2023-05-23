@@ -1,18 +1,46 @@
 /// <reference path="./type.ts"/>
+/// <reference path="./md5.js" />
 
 const API_URL = 'http://localhost:8000/api/'
 
 const SEARCH_URL = API_URL + 'search';
 const INFO_URL = API_URL + 'info';
 
-function make_request<O extends { code: number }, Args extends unknown[]>(args2url: (...args: Args) => string) {
-	return async (...args: Args) => {
+const TOKEN = '72136226c6a73669787ee4fd02a74c27';
+
+type ParseError = {
+	code: -123,
+	message: string,
+	err: any,
+	res: any
+}
+
+async function parseJSON<T>(res: Response): Promise<T | ParseError> {
+	if (res.status !== 200) return { code: -123, message: '返回码非 200', err: null, res: res };
+	try {
+		return await res.json() as Promise<T>;
+	} catch (err) {
+		return { code: -123, message: 'CPH 不知道为什么 parseJSON 错了', err, res };
+	}
+}
+
+function make_request<O extends { code: 0 }, Args extends unknown[]>(args2url: (...args: Args) => string) {
+	type _O = O | PossibleErrors;
+	return async (...args: Args): Promise<O> => {
 		const url = args2url(...args);
-		const res = await fetch(url).then(res => res.json()) as O;
+		const res = await fetch(url).then(parseJSON<_O>);
 		if (res.code !== 0) throw { url, res };
 		return res;
 	}
 }
 
-const request = make_request<Search, [Up['mid']]>(mid => `${SEARCH_URL}?mid=${mid}`);
-const get_info = make_request<Info, [Up['mid']]>(mid => `${INFO_URL}?mid=${mid}`);
+function wrap_url(paramstr: string): string {
+	const wts = Math.round(Date.now() / 1000);
+	paramstr += `&wts=${wts}`;
+	const w_rid = md5(paramstr + TOKEN);
+	paramstr += `&w_rid=${w_rid}`;
+	return '?' + paramstr;
+}
+
+const request = make_request<Search, [Up['mid']]>(mid => SEARCH_URL + wrap_url(`index=1&mid=${mid}&order=pubdate&order_avoided=true&platform=web&pn=1&ps=25&web_location=1550101`));
+const get_info = make_request<Info, [Up['mid']]>(mid => INFO_URL + wrap_url(`mid=${mid}&platform=web&token=&web_location=1550101`));
