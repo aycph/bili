@@ -6,6 +6,8 @@ const API_URL = 'http://localhost:8000/api/'
 const SEARCH_URL = API_URL + 'search';
 const INFO_URL = API_URL + 'info';
 
+const RETRY_COUNT = 5;
+
 const TOKEN = '72136226c6a73669787ee4fd02a74c27';
 
 type ParseError = {
@@ -28,9 +30,13 @@ function make_request<O extends { code: 0 }, Args extends unknown[]>(args2url: (
 	type _O = O | PossibleErrors;
 	return async (...args: Args): Promise<O> => {
 		const url = args2url(...args);
-		const res = await fetch(url).then(parseJSON<_O>);
-		if (res.code !== 0) throw { url, res };
-		return res;
+		let cnt = 0;
+		do {
+			const res = await fetch(url).then(parseJSON<_O>);
+			if (res.code === 0) return res;
+			console.info(`request failed, retrying count ${cnt + 1}...`, { url, res });
+			if (++cnt == RETRY_COUNT) throw { url, res };
+		} while (true);
 	}
 }
 
