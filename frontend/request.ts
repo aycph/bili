@@ -16,7 +16,7 @@ type ParseError = {
 }
 
 async function parseJSON<T>(res: Response): Promise<T | ParseError> {
-	if (res.status !== 200) return { code: -123, message: '返回码非 200', err: null, res: res };
+	if (res.status !== 200) return { code: -123, message: '返回码非 200', err: null, res };
 	try {
 		return await res.json() as Promise<T>;
 	} catch (err) {
