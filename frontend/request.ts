@@ -34,8 +34,9 @@ function make_request<O extends { code: 0 }, Args extends unknown[]>(args2url: (
 		do {
 			const res = await fetch(url).then(parseJSON<_O>);
 			if (res.code === 0) return res;
+			if (res.code === -401) throw { url, res }; // 非法访问
 			console.info(`request failed, retrying count ${cnt + 1}...`, { url, res });
-			if (++cnt == RETRY_COUNT) throw { url, res };
+			if (++cnt === RETRY_COUNT) throw { url, res };
 		} while (true);
 	}
 }

@@ -8,9 +8,24 @@ var errno = false; // 全局变量，标记错误
 var mid2name: { [mid: Up['mid']]: string } = {}; // 全局变量，提供 mid 与昵称映射
 var logs: any; // 全局变量，用于保存输出信息方便调试
 
+var errors: {url: string, res: BaseError }[] = [];
+function get_mid(url: string): number {
+	return parseInt(url.match(/mid=(\d+)/)![1]);
+}
+function errors2str(): string {
+	try {
+		return errors.map(
+			({ url, res: { code, message } }) => `${mid2name[get_mid(url)]}: { code: ${code}, message: ${message} }`
+			).join('\n');
+	} catch {
+		return '捕获了不期待的异常格式~';
+	}
+}
+
 function make_error<T>(ret: T) {
 	return (err: any) => {
 		errno = true;
+		errors.push(err);
 		console.error(err);
 		return ret;
 	};
@@ -89,7 +104,7 @@ async function main() {
 
 window.onload = () => main().then(ret => { console.log(ret); logs = ret; })
 	.then(() => {
-		if (!errno || window.confirm('出现了已处理的错误，请在控制台查收~\n是否关闭后端'))
+		if (!errno || window.confirm(errors2str() + '\n是否关闭后端'))
 			fetch('exit');
 	})
 	.catch(err => {
