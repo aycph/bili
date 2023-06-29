@@ -8,7 +8,7 @@ const INFO_URL = API_URL + 'info';
 
 const RETRY_COUNT = 5;
 
-const TOKEN = '5a73a9f6609390773b53586cce514c2e';
+const TOKEN = 'ddca70c043fb12d230cc97efff034409';
 
 type ParseError = {
 	code: -123,
