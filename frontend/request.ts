@@ -26,10 +26,18 @@ async function parseJSON<T>(res: Response): Promise<T | ParseError> {
 	}
 }
 
-function make_request<O extends { code: 0 }, Args extends unknown[]>(args2url: (...args: Args) => string) {
+function make_request<O extends { code: 0 }, Args extends object, DefaultArgs extends object = object>(
+	api: string,
+	defaultArgs: DefaultArgs
+) {
 	type _O = O | PossibleErrors;
-	return async (...args: Args): Promise<O> => {
-		const url = args2url(...args);
+	return async (args: Args): Promise<O> => {
+		const wts = Math.round(Date.now() / 1000);
+		const obj = { ...defaultArgs, ...args, wts };
+		const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
+		const paramstr = argList.join('&');
+		const w_rid = md5(paramstr + TOKEN);
+		const url = api + '?' + paramstr + '&w_rid=' + w_rid;
 		let cnt = 0;
 		do {
 			const res = await fetch(url).then(parseJSON<_O>);
@@ -41,13 +49,17 @@ function make_request<O extends { code: 0 }, Args extends unknown[]>(args2url: (
 	}
 }
 
-function wrap_url(paramstr: string): string {
-	const wts = Math.round(Date.now() / 1000);
-	paramstr += `&wts=${wts}`;
-	const w_rid = md5(paramstr + TOKEN);
-	paramstr += `&w_rid=${w_rid}`;
-	return '?' + paramstr;
-}
+const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, {
+	index: 1,
+	order: 'pubdate',
+	order_avoided: true,
+	platform: 'web',
+	pn: 1,
+	ps: 25,
+	web_location: 1550101
+});
 
-const request = make_request<Search, [Up['mid']]>(mid => SEARCH_URL + wrap_url(`index=1&mid=${mid}&order=pubdate&order_avoided=true&platform=web&pn=1&ps=25&web_location=1550101`));
-const get_info = make_request<Info, [Up['mid']]>(mid => INFO_URL + wrap_url(`mid=${mid}&platform=web&token=&web_location=1550101`));
+const get_info = make_request<Info, { mid: Up['mid'] }>(INFO_URL, {
+	platform: 'web',
+	web_location: 1550101
+});

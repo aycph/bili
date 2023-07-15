@@ -33,7 +33,7 @@ function make_error<T>(ret: T) {
 
 async function part1(ups: Up[]) {
 	let videos = (await Promise.all(
-		ups.map( up => request(up.mid).then(convert).catch(make_error([])) )
+		ups.map( up => get_search({ mid: up.mid }).then(convert).catch(make_error([])) )
 		)).flat();
 
 	videos.sort((a, b) => b['created'] - a['created']);
@@ -67,7 +67,7 @@ async function part2(ups: Up[]) {
 
 	const infos = await Promise.all( ups.map( async up => {
 		try {
-			const info = await get_info(up.mid);
+			const info = await get_info({ mid: up.mid });
 			const now = info['data']['name'], old = up.name;
 			if (now !== old) alert_list.push({ old, now })
 			return info;
