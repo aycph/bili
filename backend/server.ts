@@ -65,6 +65,7 @@ class Route {
 
 new Route('https://api.bilibili.com/x/space/wbi/arc/search');
 new Route('https://api.bilibili.com/x/space/wbi/acc/info');
+new Route('https://api.bilibili.com/x/web-interface/nav');
 
 const server = http.createServer();
 

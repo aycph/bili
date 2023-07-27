@@ -3,12 +3,30 @@
 
 const API_URL = 'http://localhost:8000/api/'
 
+const NAV_URL = API_URL + 'nav';
 const SEARCH_URL = API_URL + 'search';
 const INFO_URL = API_URL + 'info';
 
 const RETRY_COUNT = 5;
 
-const TOKEN = 'eff8fb5b467723ee33a907cfcd224a4a';
+const TOKEN = (async function() {
+	const MAGIC_ARRAY = [
+		46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
+		33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13
+	];
+	
+	const R = /https:\/\/i0.hdslb.com\/bfs\/wbi\/([a-z0-9]{32}).png/;
+
+	const o: any = await fetch(NAV_URL).then(res => res.json());
+	const img_url: string = o['data']['wbi_img']['img_url'];
+	const sub_url: string = o['data']['wbi_img']['sub_url'];
+	const img_key = img_url.match(R)![1];
+	const sub_key = sub_url.match(R)![1];
+
+	const key = img_key + sub_key;
+	const token = MAGIC_ARRAY.map(i => key[i]).join('');
+	return token;
+})();
 
 type ParseError = {
 	code: -123,
@@ -36,7 +54,7 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 		const obj = { ...defaultArgs, ...args, wts };
 		const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
 		const paramstr = argList.join('&');
-		const w_rid = md5(paramstr + TOKEN);
+		const w_rid = md5(paramstr + await TOKEN);
 		const url = api + '?' + paramstr + '&w_rid=' + w_rid;
 		let cnt = 0;
 		do {
