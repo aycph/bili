@@ -68,16 +68,9 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 }
 
 const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, {
-	index: 1,
-	order: 'pubdate',
 	order_avoided: true,
-	platform: 'web',
 	pn: 1,
-	ps: 25,
-	web_location: 1550101
+	ps: 20,
 });
 
-const get_info = make_request<Info, { mid: Up['mid'] }>(INFO_URL, {
-	platform: 'web',
-	web_location: 1550101
-});
+const get_info = make_request<Info, { mid: Up['mid'] }>(INFO_URL, {});
