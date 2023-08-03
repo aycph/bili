@@ -87,8 +87,8 @@ async function part2(ups: Up[]) {
 
 async function main() {
 
-	const bili: [Up[], Up[]] = await fetch('bili.json').then(res => res.json());
-	const ups = bili.flat();
+	const bili = await fetch('bili.json').then(res => res.json()) as { [group: string]: Up[] };
+	const ups = Object.keys(bili).map(group => bili[group]).flat()
 	ups.forEach(up => mid2name[up['mid']] = up['name']);
 
 	const [{ infos, alert_list }, videos] = await Promise.all([
