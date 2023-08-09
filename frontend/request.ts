@@ -7,7 +7,7 @@ const NAV_URL = API_URL + 'nav';
 const SEARCH_URL = API_URL + 'search';
 const INFO_URL = API_URL + 'info';
 
-const RETRY_COUNT = 5;
+const RETRY_COUNT = 1;
 
 const TOKEN = (async function() {
 	const MAGIC_ARRAY = [
