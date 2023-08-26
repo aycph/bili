@@ -13,7 +13,9 @@ const HEADER = {
 
 type Chunk = string | Buffer | Uint8Array | null;
 
-function make_res(res: http.ServerResponse, statusCode: number, data: Chunk, route: string, headers?: http.OutgoingHttpHeaders | http.OutgoingHttpHeader[]): void {
+function make_res<
+	Response extends http.ServerResponse = http.ServerResponse
+>(res: Response, statusCode: number, data: Chunk, route: string, headers?: http.OutgoingHttpHeaders | http.OutgoingHttpHeader[]): void {
 	res.writeHead(statusCode, headers);
 	console.log(statusCode, route);
 	res.end(data);
@@ -38,7 +40,9 @@ class Route {
 		Route.routingTable.push(this);
 	}
 
-	public static forward(route: string, res: http.ServerResponse): void {
+	public static forward<
+		Response extends http.ServerResponse = http.ServerResponse
+	>(route: string, res: Response): void {
 		for (let routeEntry of Route.routingTable) {
 			if (!routeEntry.test(route)) continue;
 			let url = routeEntry.route;
@@ -67,9 +71,7 @@ new Route('https://api.bilibili.com/x/space/wbi/arc/search');
 new Route('https://api.bilibili.com/x/space/wbi/acc/info');
 new Route('https://api.bilibili.com/x/web-interface/nav');
 
-const server = http.createServer();
-
-server.addListener('request', (req, res) => {
+const server = http.createServer((req, res) => {
 	const route = req.url! === '/' ? DEFAULT_URL : req.url!;
 
 	if (route === '/exit') {
