@@ -52,10 +52,12 @@ class Route {
 				url,
 				{ headers: HEADER },
 				i_res => {
+					const id = setInterval(console.error, 5000, 'still waiting');
 					res.writeHead(i_res.statusCode!, i_res.headers);
 					console.log(i_res.statusCode, API_BASE + route);
-					i_res.on('data', data => res.write(data));
-					i_res.on('end', () => res.end(null));
+					let content = '';
+					i_res.on('data', data => content += data);
+					i_res.on('end', () => { res.end(content); clearInterval(id) });
 				}
 			).on('error', err => {
 				make_res(res, 503, err.message, API_BASE + route);
