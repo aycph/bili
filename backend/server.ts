@@ -7,8 +7,9 @@ const API_BASE = '/api';
 
 const PORT = 8000;
 
-const HEADER = {
-	'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54'
+const HEADERS = {
+	'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54',
+	'Cookie': 'buvid3=infoc;'
 }
 
 type Chunk = string | Buffer | Uint8Array | null;
@@ -50,7 +51,7 @@ class Route {
 			if (split !== -1) url += route.substring(split);
 			https.get(
 				url,
-				{ headers: HEADER },
+				{ headers: HEADERS },
 				i_res => {
 					const id = setInterval(console.error, 5000, 'still waiting');
 					res.writeHead(i_res.statusCode!, i_res.headers);

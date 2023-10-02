@@ -8,7 +8,7 @@ var errno = false; // 全局变量，标记错误
 var mid2name: { [mid: Up['mid']]: string } = {}; // 全局变量，提供 mid 与昵称映射
 var logs: any; // 全局变量，用于保存输出信息方便调试
 
-var errors: {url: string, res: BaseError }[] = [];
+var errors: { url: string, res: BaseError }[] = [];
 function get_mid(url: string): number {
 	return parseInt(url.match(/mid=(\d+)/)![1]);
 }

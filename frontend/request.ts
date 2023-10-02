@@ -50,17 +50,18 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 ) {
 	type _O = O | PossibleErrors;
 	return async (args: Args): Promise<O> => {
-		const wts = Math.round(Date.now() / 1000);
-		const obj = { ...defaultArgs, ...args, wts };
-		const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
-		const paramstr = argList.join('&');
-		const w_rid = md5(paramstr + await TOKEN);
-		const url = api + '?' + paramstr + '&w_rid=' + w_rid;
 		let cnt = 0;
 		do {
-			const res = await fetch(url).then(parseJSON<_O>);
+			// 必须重新计算 url
+			const wts = Math.round(Date.now() / 1000);
+			const obj = { ...defaultArgs, ...args, wts };
+			const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
+			const paramstr = argList.join('&');
+			const w_rid = md5(paramstr + await TOKEN);
+			const url = api + '?' + paramstr + '&w_rid=' + w_rid;
+			const res = await fetch(url).then(parseJSON<_O>); // headers 交由后端填补
 			if (res.code === 0) return res;
-			if (res.code === -401) throw { url, res }; // 非法访问
+			if (res.code === -401) throw { url, res }; // 非法访问不重试
 			console.info(`request failed, retrying count ${cnt + 1}...`, { url, res });
 			if (++cnt === RETRY_COUNT) throw { url, res };
 		} while (true);
