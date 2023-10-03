@@ -33,9 +33,9 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 								srcset="${cover}@672w_378h_1c_!web-search-common-cover.webp"
 								type="image/webp">
 							<img "${cover}@672w_378h_1c_!web-search-common-cover"
-								alt="${title}" loading="lazy" onload="">
+								alt="${title.replace(/\"/g, '&quot;')}" loading="lazy" onload="">
 						</picture>
-						<div class="v-inline-player"></div>
+						<div class="v-inline-player"></div>2
 					</div>
 					<div class="bili-video-card__mask" data-v-dec592ec="">
 						<div class="bili-video-card__stats" data-v-dec592ec="">
@@ -63,7 +63,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 					<a
 						href="https://www.bilibili.com/video/${bvid}/" target="_blank" data-v-dec592ec=""
 						data-mod="search-card" data-idx="all" data-ext="click">
-						<h3 class="bili-video-card__info--tit" title="${title}"
+						<h3 class="bili-video-card__info--tit" title="${title.replace(/\"/g, '&quot;')}"
 							data-v-dec592ec="">${title}</h3>
 					</a>
 					<p class="bili-video-card__info--bottom" data-v-dec592ec="">
