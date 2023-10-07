@@ -32,7 +32,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 							<source
 								srcset="${cover}@672w_378h_1c_!web-search-common-cover.webp"
 								type="image/webp">
-							<img "${cover}@672w_378h_1c_!web-search-common-cover"
+							<img src="${cover}@672w_378h_1c_!web-search-common-cover"
 								alt="${title.replace(/\"/g, '&quot;')}" loading="lazy" onload="">
 						</picture>
 						<div class="v-inline-player"></div>2
