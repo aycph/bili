@@ -31,6 +31,38 @@ function make_error<T>(ret: T) {
 	};
 }
 
+function isObject(o: any): o is { [key: string]: any } {
+	return typeof o === 'object' && o !== null && !Array.isArray(o);
+}
+
+async function get_ups() {
+	const bili = await fetch('bili.json').then(res => res.json()); // as { [group: string]: Up[] }
+	// 检查 bili 类型并查重，生成 mid2name 并返回 Up[]
+	let results: Up[] = [];
+	if (!isObject(bili))
+		throw 'bili.json 应该被解析为一个对象/字典';
+	for (let key in bili) {
+		const ups = bili[key];
+		if (!Array.isArray(ups)) throw `每个键的值应为数组，但 ${key} 的键不是`;
+		for (let i = 0; i < ups.length; ++i) {
+			const up = ups[i];
+			if (!isObject(up))
+				throw `${key} 分组下第 ${i + 1} 个条目不为对象/字典`;
+			const mid = up['mid'];
+			if (typeof mid !== 'number' && typeof mid !== 'string')
+				throw `${key} 分组下第 ${i + 1} 个条目的 mid 属性不为 number 或 string`;
+			const name = up['name'];
+			if (typeof name !== 'string')
+				throw `${key} 分组下第 ${i + 1} 的 name 属性不为 string`;
+			if (mid2name[mid] !== undefined)
+				throw `${key} 分组下第 ${i + 1} 个条目 “${name}” 和之前的 “${mid2name[mid]}” mid ${mid} 重复`;
+			mid2name[mid] = name;
+			results.push({ mid, name });
+		}
+	}
+	return results;
+}
+
 async function part1(ups: Up[]) {
 	let videos = (await Promise.all(
 		ups.map( up => get_search({ mid: up.mid }).then(convert).catch(make_error([])) )
@@ -87,9 +119,7 @@ async function part2(ups: Up[]) {
 
 async function main() {
 
-	const bili = await fetch('bili.json').then(res => res.json()) as { [group: string]: Up[] };
-	const ups = Object.values(bili).flat();
-	ups.forEach(up => mid2name[up['mid']] = up['name']);
+	const ups = await get_ups();
 
 	const [{ infos, alert_list }, videos] = await Promise.all([
 		part2(ups),
@@ -109,5 +139,5 @@ window.onload = () => main().then(ret => { console.log(ret); logs = ret; })
 	})
 	.catch(err => {
 		console.error(err);
-		alert('出错哩~');
+		alert('出错哩~\n' + err);
 	});
