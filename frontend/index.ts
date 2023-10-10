@@ -12,10 +12,13 @@ var errors: { url: string, res: BaseError }[] = [];
 function get_mid(url: string): number {
 	return parseInt(url.match(/mid=(\d+)/)![1]);
 }
+function get_api(url: string): string {
+	return url.match(/\/(\w*)(\?.*)?$/)![1]
+}
 function errors2str(): string {
 	try {
 		return errors.map(
-			({ url, res: { code, message } }) => `${mid2name[get_mid(url)]}: { code: ${code}, message: ${message} }`
+			({ url, res: { code, message } }) => `${get_api(url)} ${mid2name[get_mid(url)]}: { code: ${code}, message: ${message} }`
 			).join('\n');
 	} catch {
 		return '捕获了不期待的异常格式~';
