@@ -72,6 +72,9 @@ const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, {
 	order_avoided: true,
 	pn: 1,
 	ps: 20,
+	dm_img_list: '[]',
+	dm_img_str: 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ',
+	dm_cover_img_str: 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjIwICgweDAwMDAzRUEwKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC'
 });
 
 const get_info = make_request<Info, { mid: Up['mid'] }>(INFO_URL, {});
