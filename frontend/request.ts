@@ -52,7 +52,7 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	return async (args: Args): Promise<O> => {
 		let cnt = 0;
 		do {
-			// 必须重新计算 url
+			// 应当更新时间戳重新计算 url
 			const wts = Math.round(Date.now() / 1000);
 			const obj = { ...defaultArgs, ...args, wts };
 			const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
@@ -72,7 +72,7 @@ const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, {
 	order_avoided: true,
 	pn: 1,
 	ps: 20,
-	dm_img_list: '[]',
+	dm_img_list: '%5B%5D',
 	dm_img_str: 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ',
 	dm_cover_img_str: 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjIwICgweDAwMDAzRUEwKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC'
 });
