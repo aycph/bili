@@ -169,7 +169,7 @@ function make_paginations(videos: Param[], num_per_page: number, page: number, r
 	if (pages < 10) {
 		return [
 			make_side_btns(page, pages, '上一页', render),
-			...Array(pages).map((_, i) => make_btn(i+1, page, render)),
+			...Array(pages).fill(0).map((_, i) => make_btn(i+1, page, render)),
 			make_side_btns(page, pages, '下一页', render),
 		]
 	} else {
