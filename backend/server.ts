@@ -9,7 +9,7 @@ const PORT = 8000;
 
 const HEADERS = {
 	'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54',
-	'Cookie': 'buvid3=4DA7620E-14C1-DA7F-A8D3-E931132CD07112774infoc;'
+	'Cookie': 'buvid3=C3438A47-0619-3F91-9696-26D307C9142008714infoc;'
 }
 
 type Chunk = string | Buffer | Uint8Array | null;
