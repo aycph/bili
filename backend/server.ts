@@ -22,13 +22,37 @@ function make_res<
 	res.end(data);
 }
 
+const SequenceExec = function() {
+	function sleep(timeout: number) {
+		return new Promise<void>(resolve => {
+			setTimeout(resolve, timeout);
+		})
+	}
+	const pool: [() => Promise<void>, number][] = [];
+	let working = false;
+	return async function work(request: () => Promise<void>, timeout: number) {
+		pool.push([request, timeout]);
+		if (working) return; 
+		working = true;
+		while (pool.length) {
+			const [request, timeout] = pool.shift()!;
+			await request();
+			await sleep(timeout);
+		}
+		working = false;
+	}
+} ();
+
 class Route {
 	protected static routingTable: Route[] = [];
+
 	protected readonly route: string;
 	protected readonly test: (url: string) => boolean;
+	protected readonly timeInterval: number;
 
-	public constructor(route: string, test?: (url: string) => boolean) {
+	public constructor(route: string, timeInterval: number = 0, test?: (url: string) => boolean) {
 		this.route = route;
+		this.timeInterval = timeInterval;
 		if (test !== undefined) {
 			this.test = test;
 		} else {
@@ -49,7 +73,7 @@ class Route {
 			let url = routeEntry.route;
 			const split = route.lastIndexOf('?');
 			if (split !== -1) url += route.substring(split);
-			https.get(
+			const task = () => new Promise<void>((resolve, reject) => https.get(
 				url,
 				{ headers: HEADERS },
 				i_res => {
@@ -58,19 +82,22 @@ class Route {
 					console.log(i_res.statusCode, API_BASE + route);
 					let content = '';
 					i_res.on('data', data => content += data);
-					i_res.on('end', () => { res.end(content); clearInterval(id) });
+					i_res.on('end', () => { res.end(content); clearInterval(id); resolve(); });
 				}
 			).on('error', err => {
 				make_res(res, 503, err.message, API_BASE + route);
 				console.error(err);
-			})
+				reject(err);
+			}));
+			if (routeEntry.timeInterval > 0) SequenceExec(task, routeEntry.timeInterval);
+			else task();
 			return;
 		}
 		make_res(res, 404, 'CPH: No such route', API_BASE + route);
 	}
 }
 
-new Route('https://api.bilibili.com/x/space/wbi/arc/search');
+new Route('https://api.bilibili.com/x/space/wbi/arc/search', 5000);
 new Route('https://api.bilibili.com/x/space/wbi/acc/info');
 new Route('https://api.bilibili.com/x/web-interface/nav');
 
