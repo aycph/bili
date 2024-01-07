@@ -1,7 +1,7 @@
 /// <reference path="./type.ts"/>
 /// <reference path="./md5.js" />
 
-const API_URL = 'http://localhost:8000/api/'
+const API_URL = 'http://localhost:8001/api/'
 
 const NAV_URL = API_URL + 'nav';
 const SEARCH_URL = API_URL + 'search';
