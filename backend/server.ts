@@ -77,7 +77,7 @@ class Route {
 				url,
 				{ headers: HEADERS },
 				i_res => {
-					const id = setInterval(console.error, 5000, 'still waiting');
+					const id = setInterval(console.error, 5000, 'still waiting: ' + url);
 					res.writeHead(i_res.statusCode!, i_res.headers);
 					console.log(i_res.statusCode, API_BASE + route);
 					let content = '';
