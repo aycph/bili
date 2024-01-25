@@ -9,7 +9,7 @@ const PORT = 8001;
 
 const HEADERS = {
 	'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54',
-	'Cookie': 'buvid3=infoc;'
+	'Cookie': 'buvid3=C3438A47-0619-3F91-9696-26D307C9142008714infoc;'
 }
 
 type Chunk = string | Buffer | Uint8Array | null;
@@ -22,13 +22,37 @@ function make_res<
 	res.end(data);
 }
 
+const SequenceExec = function() {
+	function sleep(timeout: number) {
+		return new Promise<void>(resolve => {
+			setTimeout(resolve, timeout);
+		})
+	}
+	const pool: [() => Promise<void>, number][] = [];
+	let working = false;
+	return async function work(request: () => Promise<void>, timeout: number) {
+		pool.push([request, timeout]);
+		if (working) return; 
+		working = true;
+		while (pool.length) {
+			const [request, timeout] = pool.shift()!;
+			await request();
+			await sleep(timeout);
+		}
+		working = false;
+	}
+} ();
+
 class Route {
 	protected static routingTable: Route[] = [];
+
 	protected readonly route: string;
 	protected readonly test: (url: string) => boolean;
+	protected readonly timeInterval: number;
 
-	public constructor(route: string, test?: (url: string) => boolean) {
+	public constructor(route: string, timeInterval: number = 0, test?: (url: string) => boolean) {
 		this.route = route;
+		this.timeInterval = timeInterval;
 		if (test !== undefined) {
 			this.test = test;
 		} else {
@@ -49,21 +73,24 @@ class Route {
 			let url = routeEntry.route;
 			const split = route.lastIndexOf('?');
 			if (split !== -1) url += route.substring(split);
-			https.get(
+			const task = () => new Promise<void>((resolve, reject) => https.get(
 				url,
 				{ headers: HEADERS },
 				i_res => {
-					const id = setInterval(console.error, 5000, 'still waiting');
+					const id = setInterval(console.error, 5000, 'still waiting: ' + url);
 					res.writeHead(i_res.statusCode!, i_res.headers);
 					console.log(i_res.statusCode, API_BASE + route);
 					let content = '';
 					i_res.on('data', data => content += data);
-					i_res.on('end', () => { res.end(content); clearInterval(id) });
+					i_res.on('end', () => { res.end(content); clearInterval(id); resolve(); });
 				}
 			).on('error', err => {
 				make_res(res, 503, err.message, API_BASE + route);
 				console.error(err);
-			})
+				reject(err);
+			}));
+			if (routeEntry.timeInterval > 0) SequenceExec(task, routeEntry.timeInterval);
+			else task();
 			return;
 		}
 		make_res(res, 404, 'CPH: No such route', API_BASE + route);
