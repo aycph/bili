@@ -3,7 +3,7 @@ type Up = {
 	mid: number | string // 但不推荐使用 string
 }
 
-type Item = {
+type SearchItem = {
 	comment: number,
 	typeid: number,
 	play: number,
@@ -46,7 +46,7 @@ type Search = {
 	message: string,
 	data: {
 		list: {
-			vlist: Item[],
+			vlist: SearchItem[],
 		},
 		page: {
 			pn: number,
@@ -96,7 +96,7 @@ function created2posttime(created: number): string {
 	return `${dtime.getFullYear()}-${month}-${date}`;
 }
 
-function _convert_item({ bvid, pic, play, video_review, length, title, mid, author, created }: Item): Param {
+function _convert_item({ bvid, pic, play, video_review, length, title, mid, author, created }: SearchItem): Param {
 	return {
 		bvid,
 		cover: pic,
