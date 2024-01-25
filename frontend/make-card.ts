@@ -1,82 +1,67 @@
 /// <reference path="type.ts"/>
 
 function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, posttime }: Param): string {
-	return `
-<div class="col_3 col_xs_1_5 col_md_2 col_xl_1_7 mb_x40" data-v-60dc383e="">
-	<div class="bili-video-card" data-v-60dc383e="" data-v-dec592ec="">
-		<div class="hide bili-video-card__skeleton" data-v-dec592ec="">
-			<div class="bili-video-card__skeleton--cover" data-v-dec592ec=""></div>
-			<div class="bili-video-card__skeleton--info" data-v-dec592ec="">
-				<div class="bili-video-card__skeleton--right" data-v-dec592ec="">
-					<p class="bili-video-card__skeleton--text" data-v-dec592ec=""></p>
-					<p class="bili-video-card__skeleton--text short" data-v-dec592ec=""></p>
-					<p class="bili-video-card__skeleton--light" data-v-dec592ec=""></p>
+	title = title.replace(/\"/g, '&quot;');
+	return `\
+<div class="col_3 col_xs_1_5 col_md_2 col_xl_1_7 mb_x40" data-v-97dcc362="">
+	<div class="bili-video-card" data-v-97dcc362="" data-v-15c84221="">
+		<div class="hide bili-video-card__skeleton" data-v-15c84221="">
+			<div class="bili-video-card__skeleton--cover" data-v-15c84221=""></div>
+			<div class="bili-video-card__skeleton--info" data-v-15c84221="">
+				<div class="bili-video-card__skeleton--right" data-v-15c84221="">
+					<p class="bili-video-card__skeleton--text" data-v-15c84221=""></p>
+					<p class="bili-video-card__skeleton--text short" data-v-15c84221=""></p>
+					<p class="bili-video-card__skeleton--light" data-v-15c84221=""></p>
 				</div>
 			</div>
 		</div>
-		<div class="bili-video-card__wrap __scale-wrap" data-v-dec592ec="">
-			<a
-				href="https://www.bilibili.com/video/${bvid}/" class="" target="_blank"
-				data-v-dec592ec="" data-mod="search-card" data-idx="all" data-ext="click">
-				<div class="bili-video-card__image __scale-player-wrap" data-v-dec592ec="">
-					<div class="bili-video-card__image--wrap" data-v-dec592ec="">
-						<div class="bili-watch-later" style="display: none;">
-							<svg class="bili-watch-later__icon">
-								<use xlink:href="#widget-watch-later"></use>
-							</svg>
-						</div>
-						<picture class="v-img bili-video-card__cover" data-v-dec592ec="">
-							<source
-								srcset="${cover}@672w_378h_1c_!web-search-common-cover.avif"
-								type="image/avif">
-							<source
-								srcset="${cover}@672w_378h_1c_!web-search-common-cover.webp"
-								type="image/webp">
-							<img src="${cover}@672w_378h_1c_!web-search-common-cover"
-								alt="${title.replace(/\"/g, '&quot;')}" loading="lazy" onload="">
+		<div class="bili-video-card__wrap __scale-wrap" data-v-15c84221="">
+			<a href="https://www.bilibili.com/video/${bvid}/" target="_blank" data-v-15c84221="" data-mod="search-card" data-idx="all" data-ext="click">
+				<div class="bili-video-card__image __scale-player-wrap" data-v-15c84221="">
+					<div class="bili-video-card__image--wrap" data-v-15c84221="">
+						<picture class="v-img bili-video-card__cover" data-v-15c84221="">
+							<source srcset="${cover}@672w_378h_1c_!web-search-common-cover.avif" type="image/avif">
+							<source srcset="${cover}@672w_378h_1c_!web-search-common-cover.webp" type="image/webp">
+							<img src="${cover}@672w_378h_1c_!web-search-common-cover" alt="${title}" loading="lazy">
 						</picture>
-						<div class="v-inline-player"></div>2
 					</div>
-					<div class="bili-video-card__mask" data-v-dec592ec="">
-						<div class="bili-video-card__stats" data-v-dec592ec="">
-							<div class="bili-video-card__stats--left" data-v-dec592ec="">
-								<span class="bili-video-card__stats--item" data-v-dec592ec="">
-									<svg class="bili-video-card__stats--icon" data-v-dec592ec="">
-										<use xlink:href="#widget-video-play-count"></use>
+					<div class="bili-video-card__mask" data-v-15c84221="">
+						<div class="bili-video-card__stats" data-v-15c84221="">
+							<div class="bili-video-card__stats--left" data-v-15c84221="">
+								<span class="bili-video-card__stats--item" data-v-15c84221="">
+									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+										viewBox="0 0 24 24" width="24" height="24" fill="#ffffff" class="bili-video-card__stats--icon"
+										data-v-15c84221=""><!--[-->
+										<path d="M12 4.99805C9.48178 4.99805 7.283 5.12616 5.73089 5.25202C4.65221 5.33949 3.81611 6.16352 3.72 7.23254C3.60607 8.4998 3.5 10.171 3.5 11.998C3.5 13.8251 3.60607 15.4963 3.72 16.76355C3.81611 17.83255 4.65221 18.6566 5.73089 18.7441C7.283 18.8699 9.48178 18.998 12 18.998C14.5185 18.998 16.7174 18.8699 18.2696 18.74405C19.3481 18.65655 20.184 17.8328 20.2801 16.76405C20.394 15.4973 20.5 13.82645 20.5 11.998C20.5 10.16965 20.394 8.49877 20.2801 7.23205C20.184 6.1633 19.3481 5.33952 18.2696 5.25205C16.7174 5.12618 14.5185 4.99805 12 4.99805zM5.60965 3.75693C7.19232 3.62859 9.43258 3.49805 12 3.49805C14.5677 3.49805 16.8081 3.62861 18.3908 3.75696C20.1881 3.90272 21.6118 5.29278 21.7741 7.09773C21.8909 8.3969 22 10.11405 22 11.998C22 13.88205 21.8909 15.5992 21.7741 16.8984C21.6118 18.7033 20.1881 20.09335 18.3908 20.23915C16.8081 20.3675 14.5677 20.498 12 20.498C9.43258 20.498 7.19232 20.3675 5.60965 20.2392C3.81206 20.0934 2.38831 18.70295 2.22603 16.8979C2.10918 15.5982 2 13.8808 2 11.998C2 10.1153 2.10918 8.39787 2.22603 7.09823C2.38831 5.29312 3.81206 3.90269 5.60965 3.75693z" fill="currentColor"></path>
+										<path d="M14.7138 10.96875C15.50765 11.4271 15.50765 12.573 14.71375 13.0313L11.5362 14.8659C10.74235 15.3242 9.75 14.7513 9.75001 13.8346L9.75001 10.1655C9.75001 9.24881 10.74235 8.67587 11.5362 9.13422L14.7138 10.96875z" fill="currentColor"></path><!--]-->
 									</svg>
-									<span data-v-dec592ec="">${views}</span>
+									<span data-v-15c84221="">${views}</span>
 								</span>
-								<span class="bili-video-card__stats--item" data-v-dec592ec="">
-									<svg class="bili-video-card__stats--icon" data-v-dec592ec="">
+								<span class="bili-video-card__stats--item" data-v-15c84221="">
+									<svg class="bili-video-card__stats--icon" data-v-15c84221="">
 										<use xlink:href="#widget-video-danmaku"></use>
 									</svg>
-									<span data-v-dec592ec="">${danmaku}</span>
+									<span data-v-15c84221="">${danmaku}</span>
 								</span>
 							</div>
-							<span class="bili-video-card__stats__duration" data-v-dec592ec="">${duration}</span>
+							<span class="bili-video-card__stats__duration" data-v-15c84221="">${duration}</span>
 						</div>
 					</div>
 				</div>
 			</a>
-			<div class="bili-video-card__info __scale-disable" data-v-dec592ec="">
-				<div class="bili-video-card__info--right" data-v-dec592ec="">
-					<a
-						href="https://www.bilibili.com/video/${bvid}/" target="_blank" data-v-dec592ec=""
-						data-mod="search-card" data-idx="all" data-ext="click">
-						<h3 class="bili-video-card__info--tit" title="${title.replace(/\"/g, '&quot;')}"
-							data-v-dec592ec="">${title}</h3>
+			<div class="bili-video-card__info __scale-disable" data-v-15c84221="">
+				<div class="bili-video-card__info--right" data-v-15c84221="">
+					<a href="//www.bilibili.com/video/${bvid}/" target="_blank" data-v-15c84221="" data-mod="search-card" data-idx="all" data-ext="click">
+						<h3 class="bili-video-card__info--tit" title="${title}" data-v-15c84221="">${title}</h3>
 					</a>
-					<p class="bili-video-card__info--bottom" data-v-dec592ec="">
-						<a
-							class="bili-video-card__info--owner" href="https://space.bilibili.com/${mid}"
-							target="_blank" data-v-dec592ec="" data-mod="search-card" data-idx="all"
-							data-ext="click">
-							<svg class="bili-video-card__info--author-ico mr_2"
-								data-v-dec592ec="">
+					<p class="bili-video-card__info--bottom" data-v-15c84221="">
+						<a class="bili-video-card__info--owner" href="//space.bilibili.com/${mid}" target="_blank" data-v-15c84221="" data-mod="search-card"
+							data-idx="all" data-ext="click">
+							<svg class="bili-video-card__info--author-ico mr_2" data-v-15c84221="">
 								<use xlink:href="#widget-up"></use>
 							</svg>
-							<span class="bili-video-card__info--author" data-v-dec592ec="">${author}</span>
-							<span class="bili-video-card__info--date" data-v-dec592ec=""> · ${posttime}</span>
+							<span class="bili-video-card__info--author" data-v-15c84221="">${author}</span>
+							<span class="bili-video-card__info--date" data-v-15c84221=""> · ${posttime}</span>
 						</a>
 					</p>
 				</div>
