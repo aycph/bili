@@ -81,11 +81,11 @@ async function part1(ups: Up[]) {
 	);
 
 	function render_page(videos: Param[], page: number) {
-		document.getElementById('CPH')!.innerHTML = videos
+		document.getElementById('cph-cards')!.innerHTML = videos
 			.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE)
 			.map(make_card).join('\n');
 	
-		const paginations = document.getElementById('ccpphh')!;
+		const paginations = document.getElementById('cph-btns')!;
 		paginations.innerHTML = '';
 		paginations.append(
 			...make_paginations(videos, MAX_NUM_PER_PAGE, page, page => render_page(videos, page))
@@ -114,7 +114,7 @@ async function part2(ups: Up[]) {
 	const live_rooms: LiveParam[] = infos
 		.map(info => info !== null ? convert2_live_param(info) : null)
 		.filter(param => param !== null) as LiveParam[];
-	const root = document.getElementById('cphcph')!;
+	const root = document.getElementById('cph-lives')!;
 	root.innerHTML = live_rooms.map(make_live).join('\n');
 	
 	return { infos, alert_list };
