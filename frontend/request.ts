@@ -73,11 +73,7 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, () => ({
 	order_avoided: true,
 	pn: 1,
-	ps: 20,
-	index: 1,
-	order: 'pubdate',
-	platform: 'web',
-	web_location: 1550101,
+	ps: 10,
 	dm_img_list: genDmImgList(),
 	dm_img_inter: genDmImgInter(),
 	dm_img_str: 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ',
