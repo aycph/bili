@@ -1,5 +1,6 @@
 /// <reference path="./type.ts"/>
 /// <reference path="./md5.js" />
+/// <reference path="./dm.ts"/>
 
 const API_URL = 'http://localhost:8001/api/'
 
@@ -46,7 +47,7 @@ async function parseJSON<T>(res: Response): Promise<T | ParseError> {
 
 function make_request<O extends { code: 0 }, Args extends object, DefaultArgs extends object = object>(
 	api: string,
-	defaultArgs: DefaultArgs
+	defaultArgs: DefaultArgs | (() => DefaultArgs)
 ) {
 	type _O = O | PossibleErrors;
 	return async (args: Args): Promise<O> => {
@@ -54,6 +55,7 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 		do {
 			// 应当更新时间戳重新计算 url
 			const wts = Math.round(Date.now() / 1000);
+			if (typeof defaultArgs !== 'object') defaultArgs = defaultArgs();
 			const obj = { ...defaultArgs, ...args, wts };
 			const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
 			const paramstr = argList.join('&');
@@ -68,20 +70,18 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	}
 }
 
-const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, {
+const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, () => ({
 	order_avoided: true,
 	pn: 1,
-	ps: 25,
+	ps: 20,
 	index: 1,
 	order: 'pubdate',
 	platform: 'web',
 	web_location: 1550101,
-	// dm_img_list: '%5B%7B%22x%22%3A3082%2C%22y%22%3A2208%2C%22z%22%3A0%2C%22timestamp%22%3A215%2C%22type%22%3A0%7D%5D',
-	// dm_img_list: '%5B%7B%22x%22%3A1322%2C%22y%22%3A1433%2C%22z%22%3A0%2C%22timestamp%22%3A123%2C%22type%22%3A0%7D%2C%7B%22x%22%3A2491%2C%22y%22%3A1194%2C%22z%22%3A80%2C%22timestamp%22%3A145%2C%22type%22%3A0%7D%5D',
-	dm_img_list: '%5B%7B%22x%22%3A2178%2C%22y%22%3A2582%2C%22z%22%3A0%2C%22timestamp%22%3A41%2C%22k%22%3A97%2C%22type%22%3A0%7D%2C%7B%22x%22%3A2350%2C%22y%22%3A1761%2C%22z%22%3A92%2C%22timestamp%22%3A146%2C%22k%22%3A89%2C%22type%22%3A0%7D%2C%7B%22x%22%3A2519%2C%22y%22%3A1610%2C%22z%22%3A209%2C%22timestamp%22%3A268%2C%22k%22%3A104%2C%22type%22%3A0%7D%2C%7B%22x%22%3A2492%2C%22y%22%3A1569%2C%22z%22%3A178%2C%22timestamp%22%3A395%2C%22k%22%3A90%2C%22type%22%3A0%7D%5D',
-	dm_img_inter: '%7B%22ds%22%3A%5B%7B%22t%22%3A0%2C%22c%22%3A%22%22%2C%22p%22%3A%5B210%2C70%2C70%5D%2C%22s%22%3A%5B213%2C5213%2C2986%5D%7D%5D%2C%22wh%22%3A%5B3%2C1%2C1%5D%2C%22of%22%3A%5B343%2C686%2C343%5D%7D',
+	dm_img_list: genDmImgList(),
+	dm_img_inter: genDmImgInter(),
 	dm_img_str: 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ',
 	dm_cover_img_str: 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjIwICgweDAwMDAzRUEwKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC'
-});
+}));
 
 const get_info = make_request<Info, { mid: Up['mid'] }>(INFO_URL, {});

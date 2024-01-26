@@ -174,4 +174,7 @@ type PossibleErrors = {
 } | {
 	code: -403,
 	message: '访问权限不足'
-}
+} | {
+	code: -352,
+    message: '风控校验失败'
+};
