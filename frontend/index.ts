@@ -115,7 +115,11 @@ async function part2(ups: Up[]) {
 		.map(info => info !== null ? convert2_live_param(info) : null)
 		.filter(param => param !== null) as LiveParam[];
 	const root = document.getElementById('cph-lives')!;
-	root.innerHTML = live_rooms.map(make_live).join('\n') + root.innerHTML;
+	if (live_rooms.length > 0) {
+		const innerHTMLs = live_rooms.map(make_live);
+		innerHTMLs.push(make_live_bottom());
+		root.innerHTML = innerHTMLs.join('\n');
+	}
 	
 	return { infos, alert_list };
 }
