@@ -71,7 +71,7 @@ async function part1(ups: Up[]) {
 		ups.map( up => get_search({ mid: up.mid }).then(convert).catch(make_error([])) )
 		)).flat();
 
-	videos.sort((a, b) => b['created'] - a['created']);
+	videos.sort((a, b) => b['created'] - a['created'] || a['aid'] - b['aid'] );
 
 	videos = videos.filter(
 		function() {
