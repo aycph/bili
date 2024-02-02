@@ -64,8 +64,8 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 			const res = await fetch(url).then(parseJSON<_O>); // headers 交由后端填补
 			if (res.code === 0) return res;
 			if (res.code === -401) throw { url, res }; // 非法访问不重试
-			console.info(`request failed, retrying count ${cnt + 1}...`, { url, res });
 			if (++cnt === RETRY_COUNT) throw { url, res };
+			console.info(`request failed, retrying count ${cnt}...`, { url, res });
 		} while (true);
 	}
 }
