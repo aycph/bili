@@ -1,3 +1,8 @@
+/**
+ * Thanks to
+ * https://stackoverflow.com/a/14733423
+ */
+
 const md5 = function() {
 
 function md5cycle(x, k) {
