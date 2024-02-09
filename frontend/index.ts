@@ -80,9 +80,14 @@ async function part1(ups: Up[]) {
 		} ()
 	);
 
-	function render_page(videos: Param[], page: number) {
-		document.getElementById('cph-cards')!.innerHTML = videos
-			.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE)
+	function render_page(videos: Param[], page: number, scrollCard: boolean = true) {
+		const e = document.getElementById('cph-cards')!;
+		if (scrollCard) e.scrollIntoView({
+			block: 'start',
+			inline: 'start',
+			behavior: 'smooth',
+		}); // 滚动到视图
+		e.innerHTML = videos.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE)
 			.map(make_card).join('\n');
 	
 		const paginations = document.getElementById('cph-btns')!;
@@ -91,7 +96,7 @@ async function part1(ups: Up[]) {
 			...make_paginations(videos, MAX_NUM_PER_PAGE, page, page => render_page(videos, page))
 			);
 	};
-	render_page(videos, 1);
+	render_page(videos, 1, false);
 
 	return videos;
 }
