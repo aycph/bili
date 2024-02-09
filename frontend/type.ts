@@ -61,6 +61,7 @@ type Search = {
 };
 
 type Param = {
+	aid: number, // used for sort/deduplication
 	bvid: string,
 	cover: string,
 	views: string,
@@ -96,8 +97,9 @@ function created2posttime(created: number): string {
 	return `${dtime.getFullYear()}-${month}-${date}`;
 }
 
-function _convert_item({ bvid, pic, play, video_review, length, title, mid, author, created }: SearchItem): Param {
+function _convert_item({ aid, bvid, pic, play, video_review, length, title, mid, author, created }: SearchItem): Param {
 	return {
+		aid,
 		bvid,
 		cover: pic,
 		views: play2views(play),

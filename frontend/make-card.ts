@@ -124,6 +124,14 @@ function make_live({ mid, name, level, roomid, face, sign, title }: LiveParam) {
 `
 }
 
+function make_live_bottom() {
+	return `\
+<div class="i_wrapper p_relative" data-v-89583ab2="">
+	<div class="card-bottom" data-v-89583ab2=""></div>
+</div>
+`
+}
+
 function make_btn(i: number, page: number, render: (page: number) => void) {
 	const btn = document.createElement('button');
 	btn.className = `vui_button vui_button--no-transition vui_pagenation--btn vui_pagenation--btn-num ${i === page ?'vui_button--active vui_button--active-blue' : ''}`;
