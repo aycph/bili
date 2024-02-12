@@ -197,3 +197,12 @@ function make_paginations(videos: Param[], num_per_page: number, page: number, r
 		}
 	}
 }
+
+function make_head(active_name: string, groups_name: string[], render: (name: string) => void) {
+	return groups_name.map(name => {
+		const innerHTML = `<button class="vui_button vui_button--tab ${active_name === name && 'vui_button--active'} mr_sm" data-v-190300f0="">${name}</button>`;
+		const e = createElement<'button'>(innerHTML);
+		e.onclick = () => render(name);
+		return e;
+	})
+}

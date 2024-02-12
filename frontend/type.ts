@@ -1,7 +1,11 @@
 type Up = {
 	name: string,
 	mid: number | string // 但不推荐使用 string
-}
+};
+
+type Groups<T> = {
+	[group: string]: T
+};
 
 type SearchItem = {
 	comment: number,
@@ -39,7 +43,7 @@ type SearchItem = {
 		ptime: number,
 		ep_num: number
 	}
-}
+};
 
 type Search = {
 	code: 0,
@@ -139,7 +143,7 @@ type Info = {
 			}
 		}
 	}
-}
+};
 
 type LiveParam = {
 	mid: number,
@@ -149,7 +153,7 @@ type LiveParam = {
 	sign: string,
 	roomid: number,
 	title: string
-}
+};
 
 function convert2_live_param({ data }: Info): LiveParam | null {
 	const live_room = data['live_room'];
@@ -168,9 +172,9 @@ function convert2_live_param({ data }: Info): LiveParam | null {
 type BaseError = {
 	code: number,
 	message: string
-}
+};
 
-type PossibleErrors = {
+type RequestErrors = {
 	code: -401,
 	message: '非法访问'
 } | {

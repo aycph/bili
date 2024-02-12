@@ -2,7 +2,7 @@
 /// <reference path="./md5.js" />
 /// <reference path="./dm.ts"/>
 
-const API_URL = 'http://localhost:8001/api/'
+const API_URL = 'api/'
 
 const NAV_URL = API_URL + 'nav';
 const SEARCH_URL = API_URL + 'search';
@@ -45,12 +45,15 @@ async function parseJSON<T>(res: Response): Promise<T | ParseError> {
 	}
 }
 
+type PossibleErrors = RequestErrors | ParseError
+
+type ResultOrError<O> =  O | PossibleErrors;
+
 function make_request<O extends { code: 0 }, Args extends object, DefaultArgs extends object = object>(
 	api: string,
 	defaultArgs: DefaultArgs | (() => DefaultArgs)
 ) {
-	type _O = O | PossibleErrors;
-	return async (args: Args): Promise<O> => {
+	return async (args: Args): Promise<ResultOrError<O>> => {
 		let cnt = 0;
 		do {
 			// 应当更新时间戳重新计算 url
@@ -61,10 +64,10 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 			const paramstr = argList.join('&');
 			const w_rid = md5(paramstr + await TOKEN);
 			const url = api + '?' + paramstr + '&w_rid=' + w_rid;
-			const res = await fetch(url).then(parseJSON<_O>); // headers 交由后端填补
+			const res = await fetch(url).then(parseJSON<ResultOrError<O>>); // headers 交由后端填补
 			if (res.code === 0) return res;
-			if (res.code === -401) throw { url, res }; // 非法访问不重试
-			if (++cnt === RETRY_COUNT) throw { url, res };
+			if (res.code === -401) return res; // 非法访问不重试
+			if (++cnt === RETRY_COUNT) return res; // 
 			console.info(`request failed, retrying count ${cnt}...`, { url, res });
 		} while (true);
 	}
