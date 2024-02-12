@@ -43,11 +43,13 @@ function render_lives(info_list: Info[]) {
 	const live_rooms: LiveParam[] = info_list
 		.map(info => info !== null ? convert2_live_param(info) : null)
 		.filter(param => param !== null) as LiveParam[];
+	const root = document.getElementById('cph-lives')!;
 	if (live_rooms.length > 0) {
-		const root = document.getElementById('cph-lives')!;
 		const innerHTMLs = live_rooms.map(make_live);
 		innerHTMLs.push(make_live_bottom());
 		root.innerHTML = innerHTMLs.join('\n');
+	} else {
+		root.innerHTML = '';
 	}
 }
 
