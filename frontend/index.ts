@@ -121,13 +121,13 @@ async function main() {
 				`${method} ${name}: { code: ${code}, message: ${message} }`
 		).join('\n') + '\n是否关闭后端';
 		if (window.confirm(message)) fetch('exit');
-	}
+	} else fetch('exit');
 
 	// 更名（落再计算之后，因为错误时显然不一定能获得更新的名字）
 	if (rename.length)
 		alert(rename.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'));
 
-	return groups;
+	return { groups, failed, rename };
 }
 
 window.onload = () => main().then(ret => { console.log(ret); logs = ret; })
