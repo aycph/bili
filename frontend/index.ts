@@ -118,6 +118,7 @@ async function main() {
 
 	// 计算错误
 	if (failed.length) {
+		console.error('failed', failed);
 		const message = failed.map(
 			({ method, name, res: { code, message } }) =>
 				`${method} ${name}: { code: ${code}, message: ${message} }`
@@ -126,8 +127,10 @@ async function main() {
 	} else fetch('exit');
 
 	// 更名（落再计算之后，因为错误时显然不一定能获得更新的名字）
-	if (rename.length)
+	if (rename.length) {
+		console.info('rename', rename);
 		alert(rename.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'));
+	}
 
 	return { groups, failed, rename };
 }
