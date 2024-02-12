@@ -73,6 +73,9 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	}
 }
 
+/**
+ * 必须精确传入参数，不能有冗余项
+ */
 const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, () => ({
 	order_avoided: true,
 	pn: 1,
@@ -83,4 +86,7 @@ const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, () => ({
 	dm_cover_img_str: 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjIwICgweDAwMDAzRUEwKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC'
 }));
 
+/**
+ * 必须精确传入参数，不能有冗余项
+ */
 const get_info = make_request<Info, { mid: Up['mid'] }>(INFO_URL, {});
