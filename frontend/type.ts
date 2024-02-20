@@ -1,6 +1,8 @@
+type Mid = number | string;
+
 type Up = {
 	name: string,
-	mid: number | string // 但不推荐使用 string
+	mid: Mid // 但不推荐使用 string
 };
 
 type Groups<T> = {

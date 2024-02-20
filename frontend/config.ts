@@ -4,7 +4,7 @@ function isObject(o: any): o is { [key: string]: any } {
 	return typeof o === 'object' && o !== null && !Array.isArray(o);
 }
 
-async function get_ups(mid2name: { [mid: Up['mid']]: string }): Promise<Groups<Up[]>> {
+async function get_ups(mid2name: { [mid: Mid]: string }): Promise<Groups<Up[]>> {
 	const bili = await fetch('bili.json').then(res => res.json()); // as { [group: string]: Up[] }
 	// 检查 bili 类型并查重，并更新 mid2name ，返回 bili
 	if (!isObject(bili))

@@ -7,7 +7,7 @@
 const MAX_NUM_PER_PAGE = 30;
 const GROUP_ALL = 'All';
 
-var mid2name: { [mid: Up['mid']]: string } = {}; // 全局变量，提供 mid 与昵称映射
+var mid2name: { [mid: Mid]: string } = {}; // 全局变量，提供 mid 与昵称映射
 var logs: any; // 全局变量，用于保存输出信息方便调试
 
 function render_page(videos: Param[], page: number, scrollCard: boolean = true) {
@@ -85,7 +85,7 @@ async function main() {
 	 */
 
 	// 通过双重循环同时完成 过滤、提取、查找更名
-	const failed: { method: string, name: string, res: PossibleErrors }[] = [];
+	const failed: { method: string, name: string, mid: Mid, res: PossibleErrors }[] = [];
 	const rename: { old: string, now: string }[] = [];
 	const groups_info: Groups<Info[]> = {};
 	const groups_search: Groups<Search[]> = {};
@@ -96,14 +96,14 @@ async function main() {
 		const search_list: Search[] = [];
 		for (let { mid, name, info, search } of groups[key]) {
 			if (info['code']) {
-				failed.push({ method: 'info', name, res: info });
+				failed.push({ method: 'info', name, mid, res: info });
 			} else {
 				if (info['data']['name'] !== name)
 					rename.push({ old: name, now: info['data']['name'] });
 				info_list.push(info);
 			}
 			if (search['code']) {
-				failed.push({ method: 'search', name, res: search });
+				failed.push({ method: 'search', name, mid, res: search });
 			} else {
 				search_list.push(search);
 			}

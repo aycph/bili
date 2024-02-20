@@ -76,7 +76,7 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 /**
  * 必须精确传入参数，不能有冗余项
  */
-const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, () => ({
+const get_search = make_request<Search, { mid: Mid }>(SEARCH_URL, () => ({
 	order_avoided: true,
 	pn: 1,
 	ps: 10,
@@ -89,4 +89,4 @@ const get_search = make_request<Search, { mid: Up['mid'] }>(SEARCH_URL, () => ({
 /**
  * 必须精确传入参数，不能有冗余项
  */
-const get_info = make_request<Info, { mid: Up['mid'] }>(INFO_URL, {});
+const get_info = make_request<Info, { mid: Mid }>(INFO_URL, {});
