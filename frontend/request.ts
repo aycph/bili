@@ -53,7 +53,8 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	api: string,
 	defaultArgs: DefaultArgs | (() => DefaultArgs)
 ) {
-	return async (args: Args): Promise<ResultOrError<O>> => {
+	type ExactArgs<T extends Args> = Args extends { [K in keyof T]: any } ? Args : never;
+	return async <RealArgs extends Args>(args: RealArgs & ExactArgs<RealArgs>): Promise<ResultOrError<O>> => {
 		let cnt = 0;
 		do {
 			// 应当更新时间戳重新计算 url
