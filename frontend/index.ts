@@ -121,10 +121,10 @@ async function main() {
 	// 计算错误
 	if (failed.length) {
 		console.error('failed', failed);
-		const message = failed.map(
+		const message = '是否关闭后端\n' + failed.map(
 			({ method, name, res: { code, message } }) =>
 				`${method} ${name}: { code: ${code}, message: ${message} }`
-		).join('\n') + '\n是否关闭后端';
+		).join('\n');
 		if (window.confirm(message)) fetch('exit');
 	} else fetch('exit');
 
@@ -137,8 +137,13 @@ async function main() {
 	return { groups, failed, rename };
 }
 
-window.onload = () => main().then(ret => { console.log(ret); logs = ret; })
+window.onload = () => main()
+	.then(ret => {
+		console.log(ret);
+		logs = ret;
+	})
 	.catch(err => {
+		logs = err;
 		console.error(err);
 		alert('捕获了不期待的异常格式~\n' + err);
 	});

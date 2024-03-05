@@ -18,7 +18,7 @@ const TOKEN = (async function() {
 	
 	const R = /https:\/\/i0.hdslb.com\/bfs\/wbi\/([a-z0-9]{32}).png/;
 
-	const o: any = await fetch(NAV_URL).then(res => res.json());
+	const o: any = await fetch(NAV_URL).then(res => res.json()); // 此处可能的异常不处理
 	const img_url: string = o['data']['wbi_img']['img_url'];
 	const sub_url: string = o['data']['wbi_img']['sub_url'];
 	const img_key = img_url.match(R)![1];
@@ -29,23 +29,24 @@ const TOKEN = (async function() {
 	return token;
 })();
 
-type ParseError = {
+type OtherError = {
 	code: -123,
 	message: string,
 	err: any,
 	res: any
 }
 
-async function parseJSON<T>(res: Response): Promise<T | ParseError> {
-	if (res.status !== 200) return { code: -123, message: '返回码非 200', err: null, res };
+type PossibleErrors = RequestErrors | OtherError;
+
+async function fetchJson<T>(url: string): Promise<T | PossibleErrors> {
 	try {
-		return await res.json() as Promise<T>;
+		const res = await fetch(url); // headers 交由后端填补
+		if (res.status !== 200) return { code: -123, message: '返回码非 200', err: null, res };
+		return await res.json() as T;
 	} catch (err) {
-		return { code: -123, message: 'CPH 不知道为什么 parseJSON 错了', err, res };
+		return { code: -123, message: String(err), err, res: null };
 	}
 }
-
-type PossibleErrors = RequestErrors | ParseError
 
 type ResultOrError<O> =  O | PossibleErrors;
 
@@ -65,10 +66,10 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 			const paramstr = argList.join('&');
 			const w_rid = md5(paramstr + await TOKEN);
 			const url = api + '?' + paramstr + '&w_rid=' + w_rid;
-			const res = await fetch(url).then(parseJSON<ResultOrError<O>>); // headers 交由后端填补
+			const res = await fetchJson<O>(url);
 			if (res.code === 0) return res;
 			if (res.code === -401) return res; // 非法访问不重试
-			if (++cnt === RETRY_COUNT) return res; // 
+			if (++cnt === RETRY_COUNT) return res;
 			console.info(`request failed, retrying count ${cnt}...`, { url, res });
 		} while (true);
 	}
