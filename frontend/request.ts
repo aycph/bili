@@ -92,3 +92,11 @@ const get_search = make_request<Search, { mid: Mid }>(SEARCH_URL, () => ({
  * 必须精确传入参数，不能有冗余项
  */
 const get_info = make_request<Info, { mid: Mid }>(INFO_URL, {});
+
+async function getData(up: Up) {
+	const { mid } = up;
+	const [info, search] = await Promise.all([get_info({ mid }), get_search({ mid })]);
+	return ({ ...up, info, search });
+}
+
+type Data = ReturnType<typeof getData> extends Promise<infer R> ? R : never;

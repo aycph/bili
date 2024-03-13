@@ -12,12 +12,12 @@ function createElement<K extends keyof HTMLElementTagNameMap>(innerHTML: string)
 
 function objectMap<
 	O extends object,
-	F extends <K extends keyof O>(key: K, value: O[K], index: number) => unknown,
+	F extends <K extends keyof O>(key: K, value: O[K]) => unknown,
 >(obj: O, func: F): {
 	[K in keyof O]: ReturnType<F>
 } {
 	// @ts-ignore 不必在意，只能假设 F 返回的类型相同了……
-	return Object.fromEntries(Object.entries(obj).map(([key, value], index) => [key, func(key, value, index)]))
+	return Object.fromEntries( Object.entries(obj).map(([key, value]) => [key, func(key, value)]) );
 }
 
 async function objectPromiseAll<O extends object>(obj: O): Promise<{

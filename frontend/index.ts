@@ -66,15 +66,7 @@ async function main() {
 
 	const groups_ups = await get_ups(mid2name);
 	const groups = await objectPromiseAll(
-		objectMap(groups_ups, (_, value) => Promise.all(
-			value.map(async up => ({
-				...up,
-				...await objectPromiseAll({
-					info: get_info({ mid: up['mid'] }),
-					search: get_search({ mid: up['mid'] }),
-				})
-			}))
-		))
+		objectMap( groups_ups, (_, value) => Promise.all(value.map(getData)) )
 	);
 
 	/**
