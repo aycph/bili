@@ -91,7 +91,10 @@ const get_search = make_request<Search, { mid: Mid }>(SEARCH_URL, () => ({
 /**
  * 必须精确传入参数，不能有冗余项
  */
-const get_info = make_request<Info, { mid: Mid }>(INFO_URL, {});
+const get_info = make_request<Info, { mid: Mid }>(INFO_URL, {
+	dm_img_str: 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ',
+	dm_cover_img_str: 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjIwICgweDAwMDAzRUEwKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC'
+});
 
 async function getData(up: Up) {
 	const { mid } = up;
