@@ -18,7 +18,7 @@ const TOKEN = (async function() {
 	
 	const R = /https:\/\/i0.hdslb.com\/bfs\/wbi\/([a-z0-9]{32}).png/;
 
-	const o: any = await fetch(NAV_URL).then(res => res.json()); // 此处可能的异常不处理
+	const o: any = await fetch(NAV_URL).then(res => res.json());
 	const img_url: string = o['data']['wbi_img']['img_url'];
 	const sub_url: string = o['data']['wbi_img']['sub_url'];
 	const img_key = img_url.match(R)![1];
@@ -27,7 +27,10 @@ const TOKEN = (async function() {
 	const key = img_key + sub_key;
 	const token = MAGIC_ARRAY.map(i => key[i]).join('');
 	return token;
-})();
+})().catch(error => {
+	error.toString = () => '计算 TOKEN 失败';
+	throw error;
+});
 
 type OtherError = {
 	code: -123,

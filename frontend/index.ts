@@ -137,5 +137,5 @@ window.onload = () => main()
 	.catch(err => {
 		logs = err;
 		console.error(err);
-		alert('捕获了不期待的异常格式~\n' + err);
+		alert('发生了未处理的异常\n    ' + err);
 	});
