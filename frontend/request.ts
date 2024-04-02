@@ -52,13 +52,17 @@ async function fetchJson<T>(url: string): Promise<T | PossibleErrors> {
 }
 
 type ResultOrError<O> =  O | PossibleErrors;
+type DataWithUrl<R> = {
+	url: string,
+	res: R
+};
 
 function make_request<O extends { code: 0 }, Args extends object, DefaultArgs extends object = object>(
 	api: string,
 	defaultArgs: DefaultArgs | (() => DefaultArgs)
 ) {
 	type ExactArgs<T extends Args> = Args extends { [K in keyof T]: any } ? Args : never;
-	return async <RealArgs extends Args>(args: RealArgs & ExactArgs<RealArgs>): Promise<ResultOrError<O>> => {
+	return async <RealArgs extends Args>(args: RealArgs & ExactArgs<RealArgs>): Promise<DataWithUrl<ResultOrError<O>>> => {
 		let cnt = 0;
 		do {
 			// 应当更新时间戳重新计算 url
@@ -70,10 +74,10 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 			const w_rid = md5(paramstr + await TOKEN);
 			const url = api + '?' + paramstr + '&w_rid=' + w_rid;
 			const res = await fetchJson<O>(url);
-			if (res.code === 0) return res;
-			if (res.code === -401) return res; // 非法访问不重试
-			if (++cnt === RETRY_COUNT) return res;
-			console.info(`request failed, retrying count ${cnt}...`, { url, res });
+			const pack = { url, res };
+			if (res.code === 0) return pack;
+			if (++cnt === RETRY_COUNT) return pack;
+			console.info(`request failed, retrying count ${cnt}...`, pack);
 		} while (true);
 	}
 }
