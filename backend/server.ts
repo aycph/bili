@@ -8,7 +8,7 @@ const API_BASE = '/api';
 const PORT = parseInt(process.argv[2]) || 8000;
 
 const HEADERS = {
-	'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54',
+	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0',
 	'Cookie': 'buvid3=800D116C-89F7-5FA7-0C9D-F163257E9E5A87802infoc;'
 };
 
