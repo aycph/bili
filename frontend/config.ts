@@ -1,14 +1,25 @@
 /// <reference path="./type.ts" />
 
+const BILI_FILE = 'bili.json'
+
 function isObject(o: any): o is { [key: string]: any } {
 	return typeof o === 'object' && o !== null && !Array.isArray(o);
 }
 
+/**
+ * 检查 bili 类型并查重，并就地更新 mid2name ，返回 bili
+ */
 async function get_ups(mid2name: { [mid: Mid]: string }): Promise<Groups<Up[]>> {
-	const bili = await fetch('bili.json').then(res => res.json()); // as { [group: string]: Up[] }
-	// 检查 bili 类型并查重，并更新 mid2name ，返回 bili
+	const resource = await fetch(BILI_FILE).catch(error => {
+		error.toString = () => `fetch ${BILI_FILE} 失败`;
+		throw error;
+	});
+	const bili = await resource.json().catch(error => {
+		error.toString = () => `解析 ${BILI_FILE} 文件失败`;
+		throw error;
+	});
 	if (!isObject(bili))
-		throw 'bili.json 应该被解析为一个对象/字典';
+		throw `${BILI_FILE} 应该被解析为一个对象/字典`;
 	for (let key in bili) {
 		const ups = bili[key];
 		if (!Array.isArray(ups)) throw `每个键的值应为数组，但 ${key} 的键不是`;

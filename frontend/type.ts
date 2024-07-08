@@ -125,6 +125,7 @@ function convert({ data }: Search): Param[] {
 
 type Info = {
 	code: 0,
+	message: string,
 	data: {
 		mid: number,
 		name: string,

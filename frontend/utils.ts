@@ -10,6 +10,7 @@ function createElement<K extends keyof HTMLElementTagNameMap>(innerHTML: string)
 	return elems[0];
 }
 
+/* Unused
 function objectMap<
 	O extends object,
 	F extends <K extends keyof O>(key: K, value: O[K]) => unknown,
@@ -29,3 +30,4 @@ async function objectPromiseAll<O extends object>(obj: O): Promise<{
 	// @ts-ignore 总得覆盖了……
 	return Object.fromEntries(entries3);
 }
+*/

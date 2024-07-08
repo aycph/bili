@@ -8,8 +8,6 @@ const NAV_URL = API_URL + 'nav';
 const SEARCH_URL = API_URL + 'search';
 const INFO_URL = API_URL + 'info';
 
-const RETRY_COUNT = 1;
-
 const TOKEN = (async function() {
 	const MAGIC_ARRAY = [
 		46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
@@ -44,17 +42,16 @@ type PossibleErrors = RequestErrors | OtherError;
 async function fetchJson<T>(url: string): Promise<T | PossibleErrors> {
 	try {
 		const res = await fetch(url); // headers 交由后端填补
-		if (res.status !== 200) return { code: -123, message: '返回码非 200', err: null, res };
+		if (res.status !== 200) return { code: -123, message: `${res.status}: ${res.statusText}`, err: null, res };
 		return await res.json() as T;
 	} catch (err) {
 		return { code: -123, message: String(err), err, res: null };
 	}
 }
 
-type ResultOrError<O> =  O | PossibleErrors;
-type DataWithUrl<R> = {
+type ResultWithUrl<Result> = {
 	url: string,
-	res: R
+	res: Result | PossibleErrors
 };
 
 function make_request<O extends { code: 0 }, Args extends object, DefaultArgs extends object = object>(
@@ -62,23 +59,16 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	defaultArgs: DefaultArgs | (() => DefaultArgs)
 ) {
 	type ExactArgs<T extends Args> = Args extends { [K in keyof T]: any } ? Args : never;
-	return async <RealArgs extends Args>(args: RealArgs & ExactArgs<RealArgs>): Promise<DataWithUrl<ResultOrError<O>>> => {
-		let cnt = 0;
-		do {
-			// 应当更新时间戳重新计算 url
-			const wts = Math.round(Date.now() / 1000);
-			if (typeof defaultArgs !== 'object') defaultArgs = defaultArgs();
-			const obj = { ...defaultArgs, ...args, wts };
-			const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
-			const paramstr = argList.join('&');
-			const w_rid = md5(paramstr + await TOKEN);
-			const url = api + '?' + paramstr + '&w_rid=' + w_rid;
-			const res = await fetchJson<O>(url);
-			const pack = { url, res };
-			if (res.code === 0) return pack;
-			if (++cnt === RETRY_COUNT) return pack;
-			console.info(`request failed, retrying count ${cnt}...`, pack);
-		} while (true);
+	return async <RealArgs extends Args>(args: RealArgs & ExactArgs<RealArgs>): Promise<ResultWithUrl<O>> => {
+		const wts = Math.round(Date.now() / 1000);
+		if (typeof defaultArgs !== 'object') defaultArgs = defaultArgs();
+		const obj = { ...defaultArgs, ...args, wts };
+		const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
+		const paramstr = argList.join('&');
+		const w_rid = md5(paramstr + await TOKEN);
+		const url = `${api}?${paramstr}&w_rid=${w_rid}`
+		const res = await fetchJson<O>(url);
+		return { url, res };
 	}
 }
 
@@ -103,10 +93,37 @@ const get_info = make_request<Info, { mid: Mid }>(INFO_URL, {
 	dm_cover_img_str: 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjIwICgweDAwMDAzRUEwKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC'
 });
 
-async function getData(up: Up) {
-	const { mid } = up;
-	const [info, search] = await Promise.all([get_info({ mid }), get_search({ mid })]);
-	return ({ ...up, info, search });
+/**
+ * 出于一些原因放弃了 Data ~~的可扩展性和复用性~~：
+ * 1. 难以使用通用的类型注记，因为必须能够静态的获得数据类型，因此显式传参动态构造 class Data 看起来是唯一选择
+ * 2. 我们的 get_search 和 get_info 都需要精确传入参数，不能有任何冗余，虽然现在均为 { mid: Mid }，但新的接口是否仍是如此
+ * 3. get_info 和 get_search 逻辑上是解耦的……无需以用户为单位获取
+class Data {
+	private readonly up: Up;
+	private datas;
+
+	constructor(up: Up) {
+		const { mid } = up;
+		this.up = up;
+		this.datas = [
+			get_info({ mid }),
+			get_search({ mid }),
+		] as const;
+	}
+
+	getData() {
+		return Promise.all(this.datas).then(([info, search]) => ({ ...this.up, info, search }));
+	}
+
+	retry(): void {
+		// async is not necessary!
+		const { mid } = this.up;
+		let [pinfo, psearch] = this.datas;
+		pinfo = pinfo.then(info => info['res']['code'] === 0 ? info : get_info({ mid }));
+		psearch = psearch.then(search => search['res']['code'] === 0 ? search : get_search({ mid }));
+		this.datas = [pinfo, psearch] as const;
+	}
 }
 
-type Data = ReturnType<typeof getData> extends Promise<infer R> ? R : never;
+type DataType = ReturnType<Data['getData']> extends Promise<infer R> ? R : never;
+*/

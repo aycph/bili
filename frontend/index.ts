@@ -65,74 +65,75 @@ function render(active_name: string, groups_names: string[], groups_info: Groups
 async function main() {
 
 	const groups_ups = await get_ups(mid2name);
-	const groups = await objectPromiseAll(
-		objectMap( groups_ups, (_, value) => Promise.all(value.map(getData)) )
-	);
+	const ups = Object.entries(groups_ups).map(([group, ups]) => ups.map(up => ({ ...up, group }))).flat();
 
-	/**
-	 * 策略 1 ：只要一个请求失败，整个 up 条目作废  
-	 * 策略 2 ：对 info 和 search 分别过滤，产生 groups_info 和 groups_search  
-	 * 
-	 * 最终选择了策略 2 ，这样各个部分会特化严重，可能会影响以后的可扩展性
-	 */
+	let tasks = await Promise.all(ups.map(up => [
+		get_info({ mid: up['mid'] }).then(info => ({ ...up, method: 'info', ...info}) as const),
+		get_search({ mid: up['mid'] }).then(search => ({ ...up, method: 'search', ...search }) as const)
+	]).flat());
 
 	// 通过双重循环同时完成 过滤、提取、查找更名
-	const failed: { method: string, name: string, mid: Mid, url: string, res: PossibleErrors }[] = [];
+	const failed: typeof tasks = [];
 	const rename: { old: string, now: string }[] = [];
-	const groups_info: Groups<Info[]> = {};
-	const groups_search: Groups<Search[]> = {};
-	const groups_names = Object.keys(groups);
+	const groups_names = Object.keys(groups_ups);
+	const groups_info: Groups<Info[]> = Object.fromEntries(groups_names.map(name => [name, []]));
+	const groups_search: Groups<Search[]> = Object.fromEntries(groups_names.map(name => [name, []]));
 
-	for (let key in groups) {
-		const info_list: Info[] = [];
-		const search_list: Search[] = [];
-		for (let { mid, name, info, search } of groups[key]) {
-			{// info
-				const { url, res } = info;
-				if (res['code']) {
-					failed.push({ method: 'info', name, mid, url, res });
-				} else {
-					if (res['data']['name'] !== name)
-						rename.push({ old: name, now: res['data']['name'] });
-					info_list.push(res);
-				}
-			}
-			{ // search
-				const { url, res } = search;
-				if (res['code']) {
-					failed.push({ method: 'search', name, mid, url, res });
-				} else {
-					search_list.push(res);
-				}
+	do {
+		for (let item of tasks) {
+			if (item['res']['code']) { // 请求错误 
+				failed.push(item);
+			} else if (item['method'] === 'info') { // info
+				groups_info[item['group']].push(item['res']);
+				if (item['res']['data']['name'] !== item['name']) // 检查昵称是否修改
+					rename.push({ old: item['name'], now: item['res']['data']['name'] });
+			} else if (item['method'] === 'search') { // search
+				groups_search[item['group']].push(item['res']);
+			} else { // Impossible !
+				const error = new Error('出现了不可能的情况！详见控制台');
+				console.error('不可能的 item', item);
+				throw error;
 			}
 		}
-		groups_info[key] = info_list;
-		groups_search[key] = search_list;
-	}
+
+		// 询问是否重试
+		if (failed.length) {
+			console.error('failed', failed);
+			const message = '以下请求失败，是否重试\n' + failed.map(
+				({ method, name, res: { code, message } }) =>
+					`${method} ${name}: { code: ${code}, message: ${message} }`
+			).join('\n');
+			if (!window.confirm(message)) break;
+		} else
+			break;
+
+		// 重试
+		tasks = await Promise.all(failed.map(item => {
+			switch (item.method) {
+				case 'info':
+					return get_info({ mid: item['mid'] }).then(info => ({ ...item, ...info}) as const);
+				case 'search':
+					return get_search({ mid: item['mid'] }).then(search => ({ ...item, ...search }) as const);
+			}
+		}));
+		failed.length = 0;
+	} while (true);
+	fetch('/exit');
+
 	groups_info[GROUP_ALL] = Object.values(groups_info).flat();
 	groups_search[GROUP_ALL] = Object.values(groups_search).flat();
 	groups_names.splice(0, 0, GROUP_ALL);
-	
+
 	// render
 	render(GROUP_ALL, groups_names, groups_info, groups_search);
 
-	// 计算错误
-	if (failed.length) {
-		console.error('failed', failed);
-		const message = '是否关闭后端\n' + failed.map(
-			({ method, name, res: { code, message } }) =>
-				`${method} ${name}: { code: ${code}, message: ${message} }`
-		).join('\n');
-		if (window.confirm(message)) fetch('exit');
-	} else fetch('exit');
-
-	// 更名（落再计算之后，因为错误时显然不一定能获得更新的名字）
+	// 更名（放在计算之后，因为错误时显然不一定能获得更新的名字）
 	if (rename.length) {
 		console.info('rename', rename);
 		alert(rename.map(({ old, now }) => `“${old}” 已经更名为 “${now}”`).join('\n'));
 	}
 
-	return { groups, failed, rename };
+	return { groups_info, groups_search, failed, rename };
 }
 
 window.onload = () => main()
