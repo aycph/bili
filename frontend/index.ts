@@ -114,6 +114,10 @@ async function main() {
 					return get_info({ mid: item['mid'] }).then(info => ({ ...item, ...info}) as const);
 				case 'search':
 					return get_search({ mid: item['mid'] }).then(search => ({ ...item, ...search }) as const);
+				default:
+					const error = new Error('不可能的重试项！详见控制台');
+					console.error('不可能的 item', item);
+					throw error;
 			}
 		}));
 		failed.length = 0;
