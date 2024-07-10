@@ -108,6 +108,7 @@ async function main() {
 			break;
 
 		// 重试
+		console.info('retry');
 		tasks = await Promise.all(failed.map(item => {
 			switch (item.method) {
 				case 'info':
