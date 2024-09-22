@@ -2,16 +2,12 @@ import * as http from 'http';
 import * as https from 'https';
 import * as fs from 'fs';
 
+import { genHeader } from './.utils/genHeader'
+
 const DEFAULT_URL = '/index.html';
 const API_BASE = '/api';
 
 const PORT = parseInt(process.argv[2]) || 8000;
-
-const HEADERS = {
-	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0',
-	'Cookie': 'buvid3=F0E7ED34-4D36-ABDB-186F-A526E023F20433426infoc;',
-	'Referer': 'https://space.bilibili.com/',
-};
 
 type Chunk = string | Buffer | null;
 
@@ -44,9 +40,9 @@ class Route {
 		Route.routingTable.push(this);
 	}
 
-	public static forward<
+	public static async forward<
 		Response extends http.ServerResponse = http.ServerResponse
-	>(route: string, res: Response): void {
+	>(route: string, res: Response): Promise<void> {
 		for (let routeEntry of Route.routingTable) {
 			if (!routeEntry.test(route)) continue;
 			let url = routeEntry.route;
@@ -54,7 +50,7 @@ class Route {
 			if (split !== -1) url += route.substring(split);
 			https.get(
 				url,
-				{ headers: HEADERS },
+				{ headers: await genHeader() },
 				i_res => {
 					const id = setInterval(console.error, 5000, 'still waiting: ' + url);
 					res.writeHead(i_res.statusCode!, i_res.headers);
