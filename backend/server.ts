@@ -2,7 +2,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as fs from 'fs';
 
-import { genHeader } from './.utils/genHeader'
+import { genHeader } from './utils/genHeader'
 
 const DEFAULT_URL = '/index.html';
 const API_BASE = '/api';
