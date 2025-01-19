@@ -169,7 +169,7 @@ function convert2_live_param({ data }: Info): LiveParam | null {
 		sign: data['official']['title'],
 		roomid: live_room['roomid'],
 		title: live_room['title']
-	}
+	};
 }
 
 type BaseError = {

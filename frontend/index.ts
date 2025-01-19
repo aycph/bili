@@ -69,7 +69,7 @@ async function main() {
 
 	let tasks = await Promise.all(ups.map(up => [
 		get_info({ mid: up['mid'] }).then(info => ({ ...up, method: 'info', ...info}) as const),
-		get_search({ mid: up['mid'] }).then(search => ({ ...up, method: 'search', ...search }) as const)
+		get_search({ mid: up['mid'] }).then(search => ({ ...up, method: 'search', ...search }) as const),
 	]).flat());
 
 	// 通过双重循环同时完成 过滤、提取、查找更名

@@ -69,7 +69,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 		</div>
 	</div>
 </div>
-`
+`;
 }
 
 function make_live({ mid, name, level, roomid, face, sign, title }: LiveParam) {
@@ -121,7 +121,7 @@ function make_live({ mid, name, level, roomid, face, sign, title }: LiveParam) {
 		</div>
 	</div>
 </div>
-`
+`;
 }
 
 function make_live_bottom() {
@@ -129,7 +129,7 @@ function make_live_bottom() {
 <div class="i_wrapper p_relative" data-v-89583ab2="">
 	<div class="card-bottom" data-v-89583ab2=""></div>
 </div>
-`
+`;
 }
 
 function make_btn(i: number, page: number, render: (page: number) => void) {
@@ -163,7 +163,7 @@ function make_paginations(videos: Param[], num_per_page: number, page: number, r
 			make_side_btns(page, pages, '上一页', render),
 			...Array(pages).fill(0).map((_, i) => make_btn(i+1, page, render)),
 			make_side_btns(page, pages, '下一页', render),
-		]
+		];
 	} else {
 		if (page < 6) {
 			// 1 - 7 … pages
@@ -173,7 +173,7 @@ function make_paginations(videos: Param[], num_per_page: number, page: number, r
 				make_ellipsis(),
 				make_btn(pages, page, render),
 				make_side_btns(page, pages, '下一页', render),
-			]
+			];
 		} else if (page > pages - 5) {
 			// 1 … pages-6 - pages
 			return [
@@ -182,7 +182,7 @@ function make_paginations(videos: Param[], num_per_page: number, page: number, r
 				make_ellipsis(),
 				...[6,5,4,3,2,1,0].map(i => make_btn(pages-i, page, render)),
 				make_side_btns(page, pages, '下一页', render),
-			]
+			];
 		} else {
 			// 显示 1 … idx-2 idx-1 idx idx+1 idx+2 … pages
 			return [
@@ -193,7 +193,7 @@ function make_paginations(videos: Param[], num_per_page: number, page: number, r
 				make_ellipsis(),
 				make_btn(pages, page, render),
 				make_side_btns(page, pages, '下一页', render),
-			]
+			];
 		}
 	}
 }

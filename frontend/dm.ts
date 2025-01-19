@@ -33,5 +33,5 @@ function genDmImgInter() {
 		ds: [{ t, c, p, s }],
 		wh, of
 	};
-	return encodeURIComponent(JSON.stringify(dm_img_inter))
+	return encodeURIComponent(JSON.stringify(dm_img_inter));
 }
