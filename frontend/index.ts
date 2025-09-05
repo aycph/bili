@@ -64,8 +64,8 @@ function render(active_name: string, groups_names: string[], groups_info: Groups
 
 async function main() {
 
-	const groups_ups = await get_ups(mid2name);
-	const ups = Object.entries(groups_ups).map(([group, ups]) => ups.map(up => ({ ...up, group }))).flat();
+	const bili = await get_ups(mid2name);
+	const ups = bili['ups'];
 
 	let tasks = await Promise.all(ups.map(up => [
 		get_info({ mid: up['mid'] }).then(info => ({ ...up, method: 'info', ...info}) as const),
@@ -75,7 +75,7 @@ async function main() {
 	// 通过双重循环同时完成 过滤、提取、查找更名
 	const failed: typeof tasks = [];
 	const rename: { old: string, now: string }[] = [];
-	const groups_names = Object.keys(groups_ups);
+	const groups_names = [GROUP_ALL, ...bili['tags']];
 	const groups_info: Groups<Info[]> = Object.fromEntries(groups_names.map(name => [name, []]));
 	const groups_search: Groups<Search[]> = Object.fromEntries(groups_names.map(name => [name, []]));
 
@@ -84,11 +84,19 @@ async function main() {
 			if (item['res']['code']) { // 请求错误 
 				failed.push(item);
 			} else if (item['method'] === 'info') { // info
-				groups_info[item['group']].push(item['res']);
+				if (item['tags']) {
+					for (let tag of item['tags'])
+						groups_info[tag].push(item['res']);
+				}
+				groups_info[GROUP_ALL].push(item['res']);
 				if (item['res']['data']['name'] !== item['name']) // 检查昵称是否修改
 					rename.push({ old: item['name'], now: item['res']['data']['name'] });
 			} else if (item['method'] === 'search') { // search
-				groups_search[item['group']].push(item['res']);
+				if (item['tags']) {
+					for (let tag of item['tags'])
+						groups_search[tag].push(item['res']);
+				}
+				groups_search[GROUP_ALL].push(item['res']);
 			} else { // Impossible !
 				const error = new Error('出现了不可能的情况！详见控制台');
 				console.error('不可能的 item', item);
@@ -124,10 +132,6 @@ async function main() {
 		failed.length = 0;
 	} while (true);
 	fetch('/exit');
-
-	groups_info[GROUP_ALL] = Object.values(groups_info).flat();
-	groups_search[GROUP_ALL] = Object.values(groups_search).flat();
-	groups_names.splice(0, 0, GROUP_ALL);
 
 	// render
 	render(GROUP_ALL, groups_names, groups_info, groups_search);

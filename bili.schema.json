@@ -1,0 +1,99 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "title": "CPH Bilibili schema",
+    "type": "object",
+    "properties": {
+        "type": {
+            "description": "Grouping strategy used: \"groups\" or \"tag\"",
+            "type": "string",
+            "enum": ["groups", "tags"]
+        }
+    },
+    "required": ["type"],
+    "if": {
+        "properties": {
+            "type": {
+                "const": "groups"
+            }
+        }
+    },
+    "then": {
+        "properties": {
+            "groups": {
+                "description": "Any group names are allowed",
+                "patternProperties": {
+                    "": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "mid": {
+                                    "anyOf": [
+                                        {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^\\d$"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "required": ["groups"]
+    },
+    "else": {
+        "properties": {
+            "tags": {
+                "description": "Collection of all tags used",
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "uniqueItems": true
+            },
+            "ups": {
+                "description": "Collection of followings",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "mid": {
+                            "anyOf": [
+                                {
+                                    "type": "integer",
+                                    "minimum": 0
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^\\d$"
+                                }
+                            ]
+                        },
+                        "tags": {
+                            "description": "Each tag must exist in top tags",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": ["name", "mid", "tags"]
+                },
+                "uniqueItems": true
+            }
+        },
+        "required": ["tags", "ups"]
+    }
+}

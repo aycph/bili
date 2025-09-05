@@ -9,6 +9,13 @@ type Groups<T> = {
 	[group: string]: T
 };
 
+type Bili = {
+	tags: string[],
+	ups: (Up & {
+		tags: string[]
+	})[]
+};
+
 type SearchItem = {
 	comment: number,
 	typeid: number,
