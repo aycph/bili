@@ -77,7 +77,7 @@ const server = http.createServer((req, res) => {
 	const route = req.url! === '/' ? DEFAULT_URL : req.url!;
 
 	if (route === '/exit') {
-		make_res(res, 304, null, route);
+		make_res(res, 204, null, route);
 		server.close();
 		return;
 	}
