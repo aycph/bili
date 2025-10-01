@@ -58,8 +58,8 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	api: string,
 	defaultArgs: DefaultArgs | (() => DefaultArgs)
 ) {
-	type ExactArgs<T extends Args> = Args extends { [K in keyof T]: any } ? Args : never;
-	return async <RealArgs extends Args>(args: RealArgs & ExactArgs<RealArgs>): Promise<ResultWithUrl<O>> => {
+	type ExactArgs<T extends Args> = Args extends { [K in keyof T]: any } ? T : never;
+	return async <RealArgs extends Args>(args: ExactArgs<RealArgs>): Promise<ResultWithUrl<O>> => {
 		const wts = Math.round(Date.now() / 1000);
 		if (typeof defaultArgs !== 'object') defaultArgs = defaultArgs();
 		const obj = { ...defaultArgs, ...args, wts };
