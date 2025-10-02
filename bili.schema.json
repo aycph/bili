@@ -38,11 +38,12 @@
                                         },
                                         {
                                             "type": "string",
-                                            "pattern": "^\\d$"
+                                            "pattern": "^\\d*$"
                                         }
                                     ]
                                 }
-                            }
+                            },
+                            "required": ["name", "mid"]
                         }
                     }
                 }
