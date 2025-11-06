@@ -24,7 +24,6 @@ class Route {
 
 	protected readonly route: string;
 	protected readonly test: (url: string) => boolean;
-	protected readonly timeInterval: number;
 
 	public constructor(route: string, test?: (url: string) => boolean) {
 		this.route = route;
