@@ -1,6 +1,6 @@
 /// <reference path="type.ts"/>
 
-function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, posttime }: Param): string {
+function render_card({ bvid, cover, views, danmaku, duration, title, mid, author, posttime }: Param): string {
 	title = title.replace(/\"/g, '&quot;');
 	return `\
 <div class="col_3 col_xs_1_5 col_md_2 col_xl_1_7 mb_x40" data-v-97dcc362="">
@@ -72,7 +72,7 @@ function make_card({ bvid, cover, views, danmaku, duration, title, mid, author, 
 `;
 }
 
-function make_live({ mid, name, level, roomid, face, sign, title }: LiveParam) {
+function render_live({ mid, name, level, roomid, face, sign, title }: LiveParam) {
 	return `\
 <div class="b-user-video-card p_relative not_100" data-v-89583ab2="" data-v-1cd59021="" data-report="search-card.all">
 	<div class="video-card-content i_wrapper" data-v-1cd59021="">
@@ -124,7 +124,7 @@ function make_live({ mid, name, level, roomid, face, sign, title }: LiveParam) {
 `;
 }
 
-function make_live_bottom() {
+function render_live_bottom() {
 	return `\
 <div class="i_wrapper p_relative" data-v-89583ab2="">
 	<div class="card-bottom" data-v-89583ab2=""></div>
@@ -132,7 +132,7 @@ function make_live_bottom() {
 `;
 }
 
-function make_btn(i: number, page: number, render: (page: number) => void) {
+function render_btn(i: number, page: number, render: (page: number) => void) {
 	const btn = document.createElement('button');
 	btn.className = `vui_button vui_button--no-transition vui_pagenation--btn vui_pagenation--btn-num ${i === page ?'vui_button--active vui_button--active-blue' : ''}`;
 	btn.innerText = i.toString();
@@ -140,7 +140,7 @@ function make_btn(i: number, page: number, render: (page: number) => void) {
 	return btn;
 }
 
-function make_side_btns(page: number, pages: number, text: '上一页' | '下一页', render: (page: number) => void): HTMLButtonElement {
+function render_side_btns(page: number, pages: number, text: '上一页' | '下一页', render: (page: number) => void): HTMLButtonElement {
 	const btn = document.createElement('button');
 	btn.className = 'vui_button vui_button--disabled vui_pagenation--btn vui_pagenation--btn-side';
 	btn.disabled = text === '上一页' ? page === 1 : page === pages;
@@ -149,56 +149,56 @@ function make_side_btns(page: number, pages: number, text: '上一页' | '下一
 	return btn;
 }
 
-function make_ellipsis() {
+function render_ellipsis() {
 	const e = document.createElement('span');
 	e.className = 'vui_pagenation--extend';
 	e.innerText = '...';
 	return e;
 }
 
-function make_paginations(videos: Param[], num_per_page: number, page: number, render: (page: number) => void): HTMLElement[] {
+function render_paginations(videos: Param[], num_per_page: number, page: number, render: (page: number) => void): HTMLElement[] {
 	const pages = Math.ceil(videos.length / num_per_page);
 	if (pages < 10) {
 		return [
-			make_side_btns(page, pages, '上一页', render),
-			...Array(pages).fill(0).map((_, i) => make_btn(i+1, page, render)),
-			make_side_btns(page, pages, '下一页', render),
+			render_side_btns(page, pages, '上一页', render),
+			...Array(pages).fill(0).map((_, i) => render_btn(i+1, page, render)),
+			render_side_btns(page, pages, '下一页', render),
 		];
 	} else {
 		if (page < 6) {
 			// 1 - 7 … pages
 			return [
-				make_side_btns(page, pages, '上一页', render),
-				...[1,2,3,4,5,6,7].map(i => make_btn(i, page, render)),
-				make_ellipsis(),
-				make_btn(pages, page, render),
-				make_side_btns(page, pages, '下一页', render),
+				render_side_btns(page, pages, '上一页', render),
+				...[1,2,3,4,5,6,7].map(i => render_btn(i, page, render)),
+				render_ellipsis(),
+				render_btn(pages, page, render),
+				render_side_btns(page, pages, '下一页', render),
 			];
 		} else if (page > pages - 5) {
 			// 1 … pages-6 - pages
 			return [
-				make_side_btns(page, pages, '上一页', render),
-				make_btn(1, page, render),
-				make_ellipsis(),
-				...[6,5,4,3,2,1,0].map(i => make_btn(pages-i, page, render)),
-				make_side_btns(page, pages, '下一页', render),
+				render_side_btns(page, pages, '上一页', render),
+				render_btn(1, page, render),
+				render_ellipsis(),
+				...[6,5,4,3,2,1,0].map(i => render_btn(pages-i, page, render)),
+				render_side_btns(page, pages, '下一页', render),
 			];
 		} else {
 			// 显示 1 … idx-2 idx-1 idx idx+1 idx+2 … pages
 			return [
-				make_side_btns(page, pages, '上一页', render),
-				make_btn(1, page, render),
-				make_ellipsis(),
-				...[-2,-1,0,1,2].map(i => make_btn(page+i, page, render)),
-				make_ellipsis(),
-				make_btn(pages, page, render),
-				make_side_btns(page, pages, '下一页', render),
+				render_side_btns(page, pages, '上一页', render),
+				render_btn(1, page, render),
+				render_ellipsis(),
+				...[-2,-1,0,1,2].map(i => render_btn(page+i, page, render)),
+				render_ellipsis(),
+				render_btn(pages, page, render),
+				render_side_btns(page, pages, '下一页', render),
 			];
 		}
 	}
 }
 
-function make_head(active_name: string, groups_name: string[], render: (name: string) => void) {
+function render_head(active_name: string, groups_name: string[], render: (name: string) => void) {
 	return groups_name.map(name => {
 		const innerHTML = `<button class="vui_button vui_button--tab ${active_name === name && 'vui_button--active'} mr_sm" data-v-190300f0="">${name}</button>`;
 		const e = createElement<'button'>(innerHTML);

@@ -1,6 +1,6 @@
 /// <reference path="./type.ts" />
 
-const BILI_FILE = 'bili.json';
+const BILI_FILE = 'config/bili.json';
 
 function isObject(o: any): o is { [key: string]: any } {
 	return typeof o === 'object' && o !== null && !Array.isArray(o);

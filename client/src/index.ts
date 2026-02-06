@@ -2,7 +2,7 @@
 /// <reference path="./utils.ts"/>
 /// <reference path="./config.ts"/>
 /// <reference path="./request.ts"/>
-/// <reference path="./make-card.ts"/>
+/// <reference path="./card.ts"/>
 
 const MAX_NUM_PER_PAGE = 30;
 const GROUP_ALL = 'All';
@@ -18,12 +18,12 @@ function render_page(videos: Param[], page: number, scrollCard: boolean = true) 
 		behavior: 'smooth',
 	}); // 滚动到视图
 	e.innerHTML = videos.slice((page-1) * MAX_NUM_PER_PAGE, page * MAX_NUM_PER_PAGE)
-		.map(make_card).join('\n');
+		.map(render_card).join('\n');
 
 	const paginations = document.getElementById('cph-btns')!;
 	paginations.innerHTML = '';
 	paginations.append(
-		...make_paginations(videos, MAX_NUM_PER_PAGE, page, page => render_page(videos, page))
+		...render_paginations(videos, MAX_NUM_PER_PAGE, page, page => render_page(videos, page))
 		);
 };
 
@@ -45,8 +45,8 @@ function render_lives(info_list: Info[]) {
 		.filter(param => param !== null) as LiveParam[];
 	const root = document.getElementById('cph-lives')!;
 	if (live_rooms.length > 0) {
-		const innerHTMLs = live_rooms.map(make_live);
-		innerHTMLs.push(make_live_bottom());
+		const innerHTMLs = live_rooms.map(render_live);
+		innerHTMLs.push(render_live_bottom());
 		root.innerHTML = innerHTMLs.join('\n');
 	} else {
 		root.innerHTML = '';
@@ -56,7 +56,7 @@ function render_lives(info_list: Info[]) {
 function render(active_name: string, groups_names: string[], groups_info: Groups<Info[]>, groups_search: Groups<Search[]>) {
 	const root = document.getElementById('cph-groups')!;
 	root.innerHTML = '';
-	root.append(...make_head(active_name, groups_names,
+	root.append(...render_head(active_name, groups_names,
 		name => render(name, groups_names, groups_info, groups_search)));
 	render_lives(groups_info[active_name]);
 	render_videos(groups_search[active_name]);

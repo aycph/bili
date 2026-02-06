@@ -4,7 +4,10 @@ import { Response, Server, respond } from './server';
 import { genHeader } from './header';
 
 const DEFAULT_URL = '/index.html';
+
 const API_BASE = '/api';
+const CONFIG_BASE = '/config';
+const DEFAULT_DIR = './public';
 
 const PORT = process.argv[2] === undefined ? 8000 : parseInt(process.argv[2]);
 
@@ -28,6 +31,13 @@ function proxy(server: Server, url: string) {
 	server.addRoute(matcher, handler);
 }
 
+function respondFile(res: Response, path: string, url: string) {
+	fs.readFile(path, (err, data) => {
+		if (err) respond(res, 404, err.message, url);
+		else respond(res, 200, data, url);
+	});
+}
+
 const server = new Server();
 
 proxy(server, 'https://api.bilibili.com/x/space/wbi/arc/search');
@@ -41,14 +51,12 @@ server.addRoute(
 	}
 );
 server.addRoute(
+	url => url.startsWith(CONFIG_BASE),
+	(url, res) => respondFile(res, '.' + url, url)
+);
+server.addRoute(
 	() => true,
-	(url, res) => fs.readFile(
-		(url === '/bili.json' ? '..' : '.') + (url === '/' ? DEFAULT_URL : url),
-		(err, data) => {
-			if (err) respond(res, 404, err.message, url);
-			else respond(res, 200, data, url);
-		}
-	)
+	(url, res) => respondFile(res, DEFAULT_DIR + (url === '/' ? DEFAULT_URL : url), url)
 );
 
 server.listen(PORT, () => console.log('Server listening on port', PORT));

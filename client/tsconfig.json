@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"lib": ["ESNext", "DOM"],
+		"outFile": "../public/js/index.js",
+		"strict": true,
+		"allowJs": true
+	},
+	"include": [
+		"src/index.ts"
+	]
+}

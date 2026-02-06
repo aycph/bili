@@ -1,3 +1,5 @@
-backend/node_modules/
-frontend/gabage/
-overrides/
+node_modules/
+dist/
+/public/js/
+/config/bili.json
+/overrides/
