@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "esnext",
 		"lib": ["ESNext", "DOM"],
-		"outFile": "../public/js/index.js",
+		"outFile": "../public/dist/index.js",
 		"strict": true,
 		"allowJs": true
 	},

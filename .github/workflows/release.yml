@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: "npm"
+          cache-dependency-path: |
+            server/package-lock.json
+
+      - run: npm i -g typescript
+      - run: npm i -C server
+      - run: tsc -p server
+      - run: tsc -p client
+
+      - run: |
+          rm -rf release_bundle
+          mkdir -p release_bundle
+          cp -r server/dist release_bundle/
+          cp -r public release_bundle/
+          cp -r config release_bundle/
+          cp start.bat release_bundle/
+          zip -r release.zip release_bundle/*
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release.zip
