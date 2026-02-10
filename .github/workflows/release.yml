@@ -28,11 +28,11 @@ jobs:
       - run: |
           rm -rf release_bundle
           mkdir -p release_bundle
-          cp -r server/dist release_bundle/
+          cp -r server/dist release_bundle/server/
           cp -r public release_bundle/
           cp -r config release_bundle/
           cp start.bat release_bundle/
-          zip -r release.zip release_bundle/*
+          (cd release_bundle && zip -r ../release.zip .)
 
       - uses: softprops/action-gh-release@v2
         with:
