@@ -28,6 +28,7 @@ jobs:
       - run: |
           rm -rf release_bundle
           mkdir -p release_bundle
+          mkdir -p release_bundle/server
           cp -r server/dist release_bundle/server/
           cp -r public release_bundle/
           cp -r config release_bundle/
