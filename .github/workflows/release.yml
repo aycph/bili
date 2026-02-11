@@ -4,11 +4,12 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      APP_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
 
     steps:
       - uses: actions/checkout@v4
@@ -26,16 +27,17 @@ jobs:
       - run: tsc -p client
 
       - run: |
-          rm -rf release_bundle
-          mkdir -p release_bundle
-          mkdir -p release_bundle/server
-          cp -r server/dist release_bundle/server/
-          cp -r public release_bundle/
-          cp -r config release_bundle/
-          cp start.bat release_bundle/
-          (cd release_bundle && zip -r ../release.zip .)
+          set -euo pipefail
+          rm -rf "$APP_NAME" "$APP_NAME.zip"
+          mkdir -p "$APP_NAME"
+          mkdir -p "$APP_NAME/server"
+          cp -r server/dist "$APP_NAME/server/"
+          cp -r public "$APP_NAME/"
+          cp -r config "$APP_NAME/"
+          cp start.bat "$APP_NAME/"
+          zip -r "$APP_NAME.zip" "$APP_NAME"
 
       - uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.REPO_ACCESS }}
-          files: release.zip
+          files: ${{ env.APP_NAME }}.zip
