@@ -1,4 +1,4 @@
 node_modules/
 dist/
 /public/dist/
-/config/bili.json
+bili.json
