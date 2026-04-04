@@ -61,8 +61,8 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	type ExactArgs<T extends Args> = Args extends { [K in keyof T]: any } ? T : never;
 	return async <RealArgs extends Args>(args: ExactArgs<RealArgs>): Promise<ResultWithUrl<O>> => {
 		const wts = Math.round(Date.now() / 1000);
-		if (typeof defaultArgs !== 'object') defaultArgs = defaultArgs();
-		const obj = { ...defaultArgs, ...args, wts };
+		let args_ex = typeof defaultArgs === 'object' ? defaultArgs : defaultArgs();
+		const obj = { ...args_ex, ...args, wts };
 		const argList = Object.keys(obj).sort().map(key => `${key}=${obj[key as keyof (Args & DefaultArgs)]}`);
 		const paramstr = argList.join('&');
 		const w_rid = md5(paramstr + await TOKEN);
