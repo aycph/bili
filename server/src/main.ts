@@ -21,7 +21,10 @@ function proxy(server: Server, url: string) {
 		try {
 			const _res = await fetch(_url, { headers: await genHeader() });
 			const body = new Uint8Array(await _res.arrayBuffer());
-			respond(res, _res.status, body, url);
+			const headers = {
+				'content-type': _res.headers.get('content-type') ?? undefined,
+			}
+			respond(res, _res.status, body, url, headers);
 		} catch (err) {
 			const message = err instanceof Error ? err.message : String(err);
 			respond(res, 503, message, url);
