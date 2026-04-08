@@ -107,7 +107,7 @@ async function main() {
 		// 询问是否重试
 		if (failed.length) {
 			console.error('failed', failed.slice());
-			const message = '以下请求失败，是否重试\n' + failed.map(
+			const message = `以下 ${failed.length} 个请求失败，是否重试\n` + failed.map(
 				({ method, name, res: { code, message } }) =>
 					`${method} ${name}: { code: ${code}, message: ${message} }`
 			).join('\n');
