@@ -81,7 +81,7 @@ async function main() {
 
 	do {
 		for (let item of tasks) {
-			if (item['res']['code']) { // 请求错误 
+			if (isFailed(item['res'])) { // 请求错误 
 				failed.push(item);
 			} else if (item['method'] === 'info') { // info
 				if (item['tags']) {

@@ -30,28 +30,30 @@ const TOKEN = (async function() {
 	throw error;
 });
 
-type OtherError = {
-	code: -123,
+type FailedRequest = {
+	code: number,
 	message: string,
 	err: any,
-	res: any
+	res: any,
+};
+
+function isFailed(o: any): o is FailedRequest {
+	return o['code'];
 }
 
-type PossibleErrors = RequestErrors | OtherError;
-
-async function fetchJson<T>(url: string): Promise<T | PossibleErrors> {
+async function fetchJSON<T>(url: string): Promise<T | FailedRequest> {
 	try {
 		const res = await fetch(url); // headers 交由后端填补
-		if (res.status !== 200) return { code: -123, message: `${res.status}: ${res.statusText}`, err: null, res };
+		if (!res.ok) return { code: res.status, message: res.statusText, err: null, res };
 		return await res.json() as T;
 	} catch (err) {
-		return { code: -123, message: String(err), err, res: null };
+		return { code: Infinity, message: String(err), err, res: null };
 	}
 }
 
 type ResultWithUrl<Result> = {
 	url: string,
-	res: Result | PossibleErrors
+	res: Result | FailedRequest
 };
 
 function make_request<O extends { code: 0 }, Args extends object, DefaultArgs extends object = object>(
@@ -67,7 +69,7 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 		const paramstr = argList.join('&');
 		const w_rid = md5(paramstr + await TOKEN);
 		const url = `${api}?${paramstr}&w_rid=${w_rid}`;
-		const res = await fetchJson<O>(url);
+		const res = await fetchJSON<O>(url);
 		return { url, res };
 	}
 }

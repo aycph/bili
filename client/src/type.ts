@@ -178,19 +178,3 @@ function convert2_live_param({ data }: Info): LiveParam | null {
 		title: live_room['title']
 	};
 }
-
-type BaseError = {
-	code: number,
-	message: string
-};
-
-type RequestErrors = {
-	code: -401,
-	message: '非法访问'
-} | {
-	code: -403,
-	message: '访问权限不足'
-} | {
-	code: -352,
-    message: '风控校验失败'
-};
