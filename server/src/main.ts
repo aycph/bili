@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import { Response, Server, respond } from './server';
-import { genHeader } from './header';
+import { genHeaders } from './headers';
 
 const DEFAULT_URL = '/index.html';
 
@@ -19,7 +19,7 @@ function proxy(server: Server, url: string) {
 	const handler = async (url: string, res: Response) => {
 		const _url = prefix + url.substring(API_BASE.length);
 		try {
-			const _res = await fetch(_url, { headers: await genHeader() });
+			const _res = await fetch(_url, { headers: await genHeaders() });
 			const body = new Uint8Array(await _res.arrayBuffer());
 			const headers = {
 				'content-type': _res.headers.get('content-type') ?? undefined,
