@@ -4,9 +4,17 @@ const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 
 async function fetchBuvid() {
 	const FINGER_URL = 'https://api.bilibili.com/x/frontend/finger/spi';
-	const res = await fetch(FINGER_URL).then(res => res.json());
+	type Finger = {
+		code: 0,
+		data: {
+			b_3: string,
+			b_4: string,
+		},
+		message: 'ok',
+	};
+	const res: Finger = await fetch(FINGER_URL).then(res => res.json());
 	const { b_3, b_4 } = res['data'];
-	const b_nut = Math.floor(Date.now() / 1000).toString();
+	const b_nut = Math.floor(Date.now() / 1000);
 	return {
 		buvid3: b_3,
 		buvid4: b_4,
@@ -23,6 +31,15 @@ function hmacSha256(key: string, message: string): string {
 // Thanks to https://github.com/pskdje/bilibili-API-collect/blob/main/docs/misc/sign/bili_ticket.md
 async function fetchTicket(csrf: string = '') {
 	const TICKET_URL = 'https://api.bilibili.com/bapis/bilibili.api.ticket.v1.Ticket/GenWebTicket';
+	type Ticket = {
+		code: 0,
+		message: 'OK',
+		data: {
+			ticket: string,
+			created_at: number,
+			ttl: 259200,
+		},
+	};
 	const ts = Math.floor(Date.now() / 1000).toString();
 	const hexSign = hmacSha256('XgwSnGZ1p', 'ts' + ts);
 	const params = new URLSearchParams({
@@ -31,7 +48,7 @@ async function fetchTicket(csrf: string = '') {
 		'context[ts]': ts,
 		csrf: csrf,
 	});
-	const res = await fetch(`${TICKET_URL}?${params.toString()}`, {
+	const res: Ticket = await fetch(`${TICKET_URL}?${params.toString()}`, {
 		method: 'POST',
 		headers: {
 			'User-Agent': USER_AGENT,
