@@ -37,19 +37,22 @@ async function fetchTicket(csrf: string = '') {
 			'User-Agent': USER_AGENT,
 		}
 	}).then(res => res.json());
-	const bili_ticket = res['data']['ticket'];
-	return { bili_ticket };
+	const { ticket, created_at, ttl } = res['data'];
+	return {
+		bili_ticket: ticket,
+		bili_ticket_expires: created_at + ttl,
+	};
 }
 
 function genBlsid() {
 	return `${Math.floor(Math.random() * 0x100000000).toString(16).padStart(8, '0')}_${Date.now().toString(16)}`.toUpperCase();
 }
 
-type CookieKey = 'buvid3' | 'buvid4' | 'b_nut' | 'bili_ticket' | 'b_lsid';
+type CookieKey = 'buvid3' | 'buvid4' | 'b_nut' | 'bili_ticket' | 'bili_ticket_expires' | 'b_lsid';
 
 type Cookie = {
 	readonly LIMIT: number,
-	cache: Promise<Partial<Record<CookieKey, string>>>,
+	cache: Promise<Partial<Record<CookieKey, string | number>>>,
 	count: number,
 	get(): Promise<string>,
 	refresh(): void,
