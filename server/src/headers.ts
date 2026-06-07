@@ -1,6 +1,7 @@
 import { createHmac } from 'crypto';
 
-const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0';
+const DESKTOP_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0';
+const MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36'
 
 async function fetchBuvid() {
 	const FINGER_URL = 'https://api.bilibili.com/x/frontend/finger/spi';
@@ -51,7 +52,7 @@ async function fetchTicket(csrf: string = '') {
 	const res: Ticket = await fetch(`${TICKET_URL}?${params.toString()}`, {
 		method: 'POST',
 		headers: {
-			'User-Agent': USER_AGENT,
+			'User-Agent': DESKTOP_USER_AGENT,
 		}
 	}).then(res => res.json());
 	const { ticket, created_at, ttl } = res['data'];
@@ -95,11 +96,20 @@ const cookie: Cookie = {
 	},
 }
 
-export async function genHeaders() {
+export async function genDesktopHeaders() {
 	return {
-		'User-Agent': USER_AGENT,
+		'User-Agent': DESKTOP_USER_AGENT,
 		'Referer': 'https://space.bilibili.com/',
 		'Origin': 'https://space.bilibili.com/',
+		'Cookie': await cookie.get(),
+	};
+}
+
+export async function genMobileHeaders() {
+	return {
+		'User-Agent': MOBILE_USER_AGENT,
+		'Referer': 'https://m.bilibili.com/',
+		'Origin': 'https://m.bilibili.com/',
 		'Cookie': await cookie.get(),
 	};
 }

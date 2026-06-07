@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 import { Response, Server, respond } from './server';
-import { genHeaders } from './headers';
+import { genDesktopHeaders, genMobileHeaders } from './headers';
 
 const DEFAULT_URL = '/index.html';
 
@@ -11,7 +11,7 @@ const DEFAULT_DIR = './public';
 
 const PORT = process.argv[2] === undefined ? 8000 : parseInt(process.argv[2]);
 
-function proxy(server: Server, url: string) {
+function proxy(server: Server, url: string, genHeaders: () => PromiseLike<HeadersInit> | HeadersInit) {
 	const index = url.lastIndexOf('/');
 	const pattern = API_BASE + url.substring(index);
 	const prefix = url.substring(0, index);
@@ -43,9 +43,9 @@ function respondFile(res: Response, path: string, url: string) {
 
 const server = new Server();
 
-proxy(server, 'https://api.bilibili.com/x/space/wbi/arc/search');
-proxy(server, 'https://api.bilibili.com/x/space/wbi/acc/info');
-proxy(server, 'https://api.bilibili.com/x/web-interface/nav');
+proxy(server, 'https://api.bilibili.com/x/space/wbi/arc/search', genMobileHeaders);
+proxy(server, 'https://api.bilibili.com/x/space/wbi/acc/info', genDesktopHeaders);
+proxy(server, 'https://api.bilibili.com/x/web-interface/nav', genDesktopHeaders);
 server.addRoute(
 	'/exit',
 	(url, res) => {
