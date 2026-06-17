@@ -60,7 +60,7 @@ function make_request<O extends { code: 0 }, Args extends object, DefaultArgs ex
 	api: string,
 	defaultArgs: DefaultArgs | (() => DefaultArgs)
 ) {
-	type ExactArgs<T extends Args> = Args extends { [K in keyof T]: any } ? T : never;
+	type ExactArgs<T extends Args> = T & Record<Exclude<keyof T, keyof Args>, never>;
 	return async <RealArgs extends Args>(args: ExactArgs<RealArgs>): Promise<ResultWithUrl<O>> => {
 		const wts = Math.round(Date.now() / 1000);
 		let args_ex = typeof defaultArgs === 'object' ? defaultArgs : defaultArgs();
