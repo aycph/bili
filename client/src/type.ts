@@ -100,6 +100,7 @@ function created2posttime(created: number): string {
 	const dtime = new Date(time);
 	const dnow = new Date(now);
 	const delta = now - time;
+	if (delta < 0) return '未来？' + dtime.toLocaleString();
 	if (delta < 60_000) return '刚刚';
 	if (delta < 3600_000) return Math.floor(delta / 60_000) + '分钟前';
 	if (delta < 24 * 3600_000) return Math.floor(delta / 3600_000) + '小时前';
